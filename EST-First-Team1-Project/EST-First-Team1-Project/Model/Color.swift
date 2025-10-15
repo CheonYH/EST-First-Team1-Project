@@ -16,7 +16,7 @@ import SwiftData
 ///   Note: 이 모델은 SwiftData에서 자동으로 관리됩니다.
 ///   새로운 항목을 추가할 때는 `ModelContext`에 `insert` 해주면 됩니다.
 @Model
-final class ColorModel {
+final class CategoryColor {
     
     
     /// 카테고리에 적용될 색상의 **red** 값입니다.
