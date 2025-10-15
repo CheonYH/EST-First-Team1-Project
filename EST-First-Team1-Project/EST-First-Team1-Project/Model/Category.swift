@@ -18,7 +18,7 @@ import SwiftData
 ///
 
 @Model
-final class CategoryModel {
+final class Category {
     
     /// 카테고리의 ** 이름 **입니다.
     /// 동일 이름이 중복 저장되지 않도록 고유(unique) 제약을 둡니다.
@@ -27,8 +27,8 @@ final class CategoryModel {
     
     /// 카테고리가 지워져도 지워진 카테고리를 가지고 있는 글이 삭제 안되도록 설정할 때 사용됩니다.
     /// 카테고리가 삭제되면 해당 카테고리를 가진 회고들의 카테고리가 nil(미분류)로 바뀝니다.
-    @Relationship(deleteRule: .nullify, inverse: \EntryModel.category)
-    var entries: [EntryModel] = []
+    @Relationship(deleteRule: .nullify, inverse: \Entry.category)
+    var entries: [Entry] = []
     
     /// 카테고리의 ** 사용 횟수 **입니다.
     /// 카테고리가 얼마나 쓰였는지 통계를 낼 때 사용됩니다.

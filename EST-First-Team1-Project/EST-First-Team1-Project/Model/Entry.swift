@@ -19,7 +19,7 @@ import SwiftData
 
 
 @Model
-final class EntryModel {
+final class Entry {
     
     /// 회고의 ** 제목 ** 입니다.
     /// 목록에 표시되거나 검색할 때 주로 사용됩니다.
@@ -35,9 +35,9 @@ final class EntryModel {
     
     /// 회고 작성 시 선택한 카테고리 입니다.
     /// 선택한 카테고리가 삭제되어도 글이 남아있도록 하기 위해 카테고리를 Optional로 설정합니다.
-    @Relationship var category: CategoryModel?
+    @Relationship var category: Category?
     
-    init(title: String, createdAt: Date = .now, content: String, category: CategoryModel? = nil) {
+    init(title: String, createdAt: Date = .now, content: String, category: Category? = nil) {
         self.title = title
         self.createdAt = createdAt
         self.content = content
