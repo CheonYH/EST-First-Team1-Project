@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		25F97A652E9E3D870048AE31 /* EST-First-Team1-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EST-First-Team1-Project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		25F97A652E9E3D870048AE31 /* EST-First-Team1-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "EST-First-Team1-Project.app"; path = "/Users/cheon/Documents/EST-First-Team1-Project/EST-First-Team1-Project/EST-First-Team1-Project/build/Debug-iphoneos/EST-First-Team1-Project.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -33,16 +33,7 @@
 			isa = PBXGroup;
 			children = (
 				25F97A672E9E3D870048AE31 /* EST-First-Team1-Project */,
-				25F97A662E9E3D870048AE31 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		25F97A662E9E3D870048AE31 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				25F97A652E9E3D870048AE31 /* EST-First-Team1-Project.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -95,7 +86,7 @@
 			mainGroup = 25F97A5C2E9E3D870048AE31;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 25F97A662E9E3D870048AE31 /* Products */;
+			productRefGroup = 25F97A5C2E9E3D870048AE31;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
