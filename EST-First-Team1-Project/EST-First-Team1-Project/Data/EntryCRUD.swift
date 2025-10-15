@@ -11,15 +11,15 @@ import SwiftData
 enum EntryCRUD {
     
     static func create(context: ModelContext, title: String,
-                            createdAt: Date, content: String) throws -> Entry{
-        let ent = Entry(title: title, createdAt: createdAt, content: content)
+                            createdAt: Date, content: String) throws -> EntryModel{
+        let ent = EntryModel(title: title, createdAt: createdAt, content: content)
         context.insert(ent)
         try context.save()
         
         return ent
     }
     
-    static func update(context: ModelContext, _ entry: Entry, editTitle:String
+    static func update(context: ModelContext, _ entry: EntryModel, editTitle:String
                           , editContent: String) throws {
         entry.title = editTitle
         entry.content = editContent
@@ -28,7 +28,7 @@ enum EntryCRUD {
     }
     
     
-    static func delete(context: ModelContext ,_ entry: Entry) throws {
+    static func delete(context: ModelContext ,_ entry: EntryModel) throws {
         context.delete(entry)
         
         try context.save()

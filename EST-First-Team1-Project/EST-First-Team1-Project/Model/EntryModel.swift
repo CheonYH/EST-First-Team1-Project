@@ -19,7 +19,7 @@ import SwiftData
 
 
 @Model
-final class Entry {
+final class EntryModel {
     
     /// 회고의 ** 제목 ** 입니다.
     /// 목록에 표시되거나 검색할 때 주로 사용됩니다.
