@@ -7,11 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-<<<<<<< HEAD
-		A08377C92E9F720400244B99 /* EST-First-Team1-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EST-First-Team1-Project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-=======
-		2578A44E2E9F69F500986AE0 /* EST-First-Team1-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EST-First-Team1-Project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
->>>>>>> ca89329 (feat(entrycrud): CRUD 모듈 구현; docs: 모델 API 주석 추가)
+		2578A53E2E9F98E100986AE0 /* EST-First-Team1-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EST-First-Team1-Project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -37,11 +33,7 @@
 			isa = PBXGroup;
 			children = (
 				25F97A672E9E3D870048AE31 /* EST-First-Team1-Project */,
-<<<<<<< HEAD
-				A08377C92E9F720400244B99 /* EST-First-Team1-Project.app */,
-=======
-				2578A44E2E9F69F500986AE0 /* EST-First-Team1-Project.app */,
->>>>>>> ca89329 (feat(entrycrud): CRUD 모듈 구현; docs: 모델 API 주석 추가)
+				2578A53E2E9F98E100986AE0 /* EST-First-Team1-Project.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -67,11 +59,7 @@
 			packageProductDependencies = (
 			);
 			productName = "EST-First-Team1-Project";
-<<<<<<< HEAD
-			productReference = A08377C92E9F720400244B99 /* EST-First-Team1-Project.app */;
-=======
-			productReference = 2578A44E2E9F69F500986AE0 /* EST-First-Team1-Project.app */;
->>>>>>> ca89329 (feat(entrycrud): CRUD 모듈 구현; docs: 모델 API 주석 추가)
+			productReference = 2578A53E2E9F98E100986AE0 /* EST-First-Team1-Project.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

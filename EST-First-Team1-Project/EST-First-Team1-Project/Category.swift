@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CategoryModel: Identifiable, Hashable {
+struct CategoryModels: Identifiable, Hashable {
     var id: UUID = UUID()
     var name: String
     var color: Color
@@ -9,12 +9,12 @@ struct CategoryModel: Identifiable, Hashable {
 }
 
 struct Category: View {
-    @State private var categories: [CategoryModel] = [
-        CategoryModel(name: "Food", color: .red, icon: "cart", parentID: nil),
-        CategoryModel(name: "Tea", color: .green, icon: "leaf", parentID: nil)
+    @State private var categories: [CategoryModels] = [
+        CategoryModels(name: "Food", color: .red, icon: "cart", parentID: nil),
+        CategoryModels(name: "Tea", color: .green, icon: "leaf", parentID: nil)
     ]
     @State private var isShowingAddSheet = false
-    @State private var editingCategory: CategoryModel? = nil
+    @State private var editingCategory: CategoryModels? = nil
 
     var body: some View {
         NavigationView {
@@ -87,7 +87,7 @@ struct Category: View {
         .navigationViewStyle(StackNavigationViewStyle())
     }
 
-    private func parentCategory(for category: CategoryModel) -> CategoryModel? {
+    private func parentCategory(for category: CategoryModels) -> CategoryModels? {
         guard let pid = category.parentID else { return nil }
         return categories.first(where: { $0.id == pid })
     }
@@ -101,8 +101,8 @@ struct Category: View {
 struct CategoryEditorView: View {
     @Environment(\.presentationMode) private var presentationMode
     let title: String
-    let initialCategory: CategoryModel?
-    let onSave: (CategoryModel) -> Void
+    let initialCategory: CategoryModels?
+    let onSave: (CategoryModels) -> Void
 
     @State private var name: String = ""
     @State private var color: Color = .blue
@@ -121,7 +121,7 @@ struct CategoryEditorView: View {
         ("발자국", "pawprint")
     ]
 
-    init(title: String, initialCategory: CategoryModel?, onSave: @escaping (CategoryModel) -> Void) {
+    init(title: String, initialCategory: CategoryModels?, onSave: @escaping (CategoryModels) -> Void) {
         self.title = title
         self.initialCategory = initialCategory
         self.onSave = onSave
@@ -173,7 +173,7 @@ struct CategoryEditorView: View {
                         } label: {
                             HStack {
                                 Spacer()
-                                Text("삭제")
+                                Text("취소")
                                     .bold()
                                 Spacer()
                             }
@@ -196,7 +196,7 @@ struct CategoryEditorView: View {
     private func save() {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        let category = CategoryModel(
+        let category = CategoryModels(
             id: initialCategory?.id ?? UUID(),
             name: trimmed,
             color: color,
