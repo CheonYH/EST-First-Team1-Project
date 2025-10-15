@@ -33,11 +33,15 @@ final class Entry {
     /// 간단한 텍스트나 긴 글 모두 저장할 수 있습니다.
     var content: String
     
+    /// 회고 작성 시 선택한 카테고리 입니다.
+    /// 선택한 카테고리가 삭제되어도 글이 남아있도록 하기 위해 카테고리를 Optional로 설정합니다.
+    @Relationship var category: Category?
     
-    init(title: String, createdAt: Date, content: String) {
+    init(title: String, createdAt: Date = .now, content: String, category: Category? = nil) {
         self.title = title
         self.createdAt = createdAt
         self.content = content
+        self.category = category
         
     }
 }

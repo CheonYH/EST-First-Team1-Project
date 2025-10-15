@@ -25,7 +25,7 @@ struct EST_First_Team1_ProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            //
         }
         .modelContainer(sharedModelContainer)
     }
