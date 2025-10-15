@@ -12,7 +12,9 @@ import SwiftData
 struct EST_First_Team1_ProjectApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Entry.self,
+            EntryModel.self,
+            CategoryModel.self,
+            ColorModel.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,7 +27,11 @@ struct EST_First_Team1_ProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
+<<<<<<< HEAD
             //
+=======
+            EmptyView() // Replace with your actual root view when available.
+>>>>>>> origin/feat/entrycrud-and-docs
         }
         .modelContainer(sharedModelContainer)
     }
