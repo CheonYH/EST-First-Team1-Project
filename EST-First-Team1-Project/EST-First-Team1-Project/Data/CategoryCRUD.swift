@@ -10,8 +10,8 @@ import SwiftData
 
 enum CategoryCRUD {
     
-    static func create(context: ModelContext, entry: Entry, name: String, count: Int) {
-        let cat = Category(name: name)
+    static func create(context: ModelContext, entry: EntryModel, name: String, count: Int) {
+        let cat = CategoryModel(name: name)
         
         context.insert(cat)
     }
