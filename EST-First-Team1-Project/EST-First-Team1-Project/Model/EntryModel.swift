@@ -17,7 +17,6 @@ import SwiftData
 ///   새로운 항목을 추가할 때는 `ModelContext`에 `insert` 해주면 됩니다.
 ///
 
-
 @Model
 final class EntryModel {
     
@@ -35,13 +34,12 @@ final class EntryModel {
     
     /// 회고 작성 시 선택한 카테고리 입니다.
     /// 선택한 카테고리가 삭제되어도 글이 남아있도록 하기 위해 카테고리를 Optional로 설정합니다.
-    @Relationship var category: Category?
+    @Relationship var category: CategoryModel?
     
-    init(title: String, createdAt: Date = .now, content: String, category: Category? = nil) {
+    init(title: String, createdAt: Date = .now, content: String, category: CategoryModel? = nil) {
         self.title = title
         self.createdAt = createdAt
         self.content = content
         self.category = category
-        
     }
 }
