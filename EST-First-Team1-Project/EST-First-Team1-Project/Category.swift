@@ -9,6 +9,7 @@ struct CategoryModels: Identifiable, Hashable {
 }
 
 struct Category: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var categories: [CategoryModels] = [
         CategoryModels(name: "Food", color: .red, icon: "cart", parentID: nil),
         CategoryModels(name: "Tea", color: .green, icon: "leaf", parentID: nil)
@@ -57,6 +58,19 @@ struct Category: View {
             }
             .navigationTitle("카테고리")
             .toolbar {
+                // ✅ 좌측 뒤로가기 버튼
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                         
+                        }
+                        .foregroundColor(.white)
+                    }
+
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { isShowingAddSheet = true }) {
                         Image(systemName: "plus.circle.fill")
@@ -214,3 +228,4 @@ struct CategoryListView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
     }
 }
+
