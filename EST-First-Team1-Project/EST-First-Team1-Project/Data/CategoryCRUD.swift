@@ -10,16 +10,25 @@ import SwiftData
 
 enum CategoryCRUD {
     
-    static func create(context: ModelContext, name: String, colorHex: String) throws {
-        let cat = CategoryModel(name: name, colorHex: colorHex)
+    static func create(context: ModelContext, name: String,
+                       r:Int, g:Int, b: Int, a:Int, icon: String) throws {
+        
+        let cat = CategoryModel(name: name, icon: icon, r: r, g: g, b: b, a:a)
         
         context.insert(cat)
         try context.save()
     }
     
-    static func update(context:ModelContext, category:CategoryModel, name: String ) throws {
+    static func update(context:ModelContext, category:CategoryModel, name: String,
+                    icon: String, r:Int, g:Int, b: Int,a:Int ) throws {
         
         category.name = name
+        category.r = r
+        category.g = g
+        category.b = b
+        category.a = a
+        category.icon = icon
+        
         try context.save()
     }
     

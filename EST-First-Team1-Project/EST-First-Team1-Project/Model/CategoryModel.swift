@@ -18,7 +18,7 @@ import SwiftData
 ///
 
 @Model
-final class CategoryModel: Hashable {
+final class CategoryModel {
     
     
     @Attribute(.unique) var id: UUID = UUID()
@@ -26,6 +26,8 @@ final class CategoryModel: Hashable {
     /// 카테고리의 ** 이름 **입니다.
     /// 동일 이름이 중복 저장되지 않도록 고유(unique) 제약을 둡니다.
     @Attribute(.unique) var name: String
+    
+    var icon: String
    
     
     /// 카테고리가 지워져도 지워진 카테고리를 가지고 있는 글이 삭제 안되도록 설정할 때 사용됩니다.
@@ -33,7 +35,11 @@ final class CategoryModel: Hashable {
     @Relationship(deleteRule: .nullify, inverse: \EntryModel.category)
     var entries: [EntryModel] = []
     
-    var colorHex: String
+    
+    var r: Int
+    var g: Int
+    var b: Int
+    var a: Int
     
     /// 카테고리의 ** 사용 횟수 **입니다.
     /// 카테고리가 얼마나 쓰였는지 통계를 낼 때 사용됩니다.
@@ -43,9 +49,13 @@ final class CategoryModel: Hashable {
     }
     
     
-    init(name: String, colorHex: String) {
+    init(name: String, icon: String, r: Int, g: Int, b: Int, a: Int) {
         self.name = name
-        self.colorHex = colorHex
+        self.icon = icon
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
     }
     
 }
