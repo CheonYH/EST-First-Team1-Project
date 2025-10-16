@@ -40,7 +40,8 @@
 ## 👯 팀원 소개
 
 | | | | | |
-| <img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/6863b073-e682-4cbb-8106-5b6a647ed288" alt="이찬희" /> | <img width="420" height="420" alt="image" src="https://github.com/user-attachments/assets/ea5c7812-dbab-44b2-8532-5a0dea6ff7a9" alt="김대현" /> | <img width="403" height="403" alt="star" src="https://github.com/user-attachments/assets/3b70fece-9602-4ef0-976b-864cd9bc5f18" alt="김두열" /> | <img width="403" height="403" alt="star" src="https://github.com/user-attachments/assets/471dd7ec-6aba-42f3-bed5-b88408e0f913" alt="여승위" /> | <img width="420" height="420" alt="image" src="https://github.com/user-attachments/assets/e2bfd524-b4ed-4ecf-9656-7e133cad6f6f" alt="천용위" /> |
+|---|---|---|---|---|
+| <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/6863b073-e682-4cbb-8106-5b6a647ed288" alt="이찬희" /> | <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/ea5c7812-dbab-44b2-8532-5a0dea6ff7a9" alt="김대현" /> | <img width="200" height="200" alt="star" src="https://github.com/user-attachments/assets/3b70fece-9602-4ef0-976b-864cd9bc5f18" alt="김두열" /> | <img width="200" height="200" alt="star" src="https://github.com/user-attachments/assets/471dd7ec-6aba-42f3-bed5-b88408e0f913" alt="여승위" /> | <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/e2bfd524-b4ed-4ecf-9656-7e133cad6f6f" alt="천용위" /> |
 | **[이찬희](https://github.com/KyleLee02)**<br><sub>iOS 개발 / 기획 / 문서작성 / </sub> | **[김대현](https://github.com/Lala-roid)**<br><sub>iOS 개발 / 디자인 / PPT 제작</sub> | **[김두열]()**<br><sub>iOS 개발 / 데이터 모델링 / 발표</sub> | **[여승위]()**<br><sub>iOS 개발 / 문서 작성</sub> | **[천용위](https://github.com/CheonYH)**<br><sub>iOS 개발 / 문서 작성</sub> |
 
 
