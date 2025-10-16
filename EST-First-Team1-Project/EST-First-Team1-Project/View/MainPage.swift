@@ -16,8 +16,9 @@ struct MainPage: View {
     @Query(sort: [SortDescriptor(\EntryModel.createdAt, order: .reverse)])
     private var entries: [EntryModel]
     
-    // 카테고리(표시용)
-    @Query private var categories: [CategoryModel]
+    // 카테고리(표시용),
+    @Query(sort: [SortDescriptor(\CategoryModel.name, order: .forward)])
+    private var categories: [CategoryModel]
     
     @State private var searchText = ""
     // 햄버거 버튼 상태 메시지(비옵셔널로 단순화, 비어있으면 표시 없음으로 취급)
@@ -185,9 +186,31 @@ struct MainPage: View {
                                             HStack {
                                                 // 수정: 관계 타입 불일치에 따른 컴파일 에러를 방지하기 위해
                                                 //       카테고리 이름 접근 대신 고정 라벨 유지
-                                                Text("Uncategorized") // 수정됨
-                                                    .font(.caption)
-                                                    .foregroundStyle(inverseOnCard.opacity(0.8))
+                                                
+                                                if let cat = e.category {
+                                                    let fg = Color.from255(r: cat.r, g: cat.g, b: cat.b)
+                                                    
+                                                    HStack(spacing: 6) {
+                                                        Image(systemName: cat.icon)
+                                                            .font(.caption)
+                                                            .foregroundStyle(fg)
+                                                        Text(cat.name)
+                                                            .font(.caption)
+                                                            .foregroundStyle(inverseOnCard.opacity(0.9))
+                                                    }
+                                                    .padding(.horizontal, 8)
+                                                    .padding(.vertical, 4)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                                            .fill(cardBackground.opacity(0.6))
+                                                    )
+                                                }
+                                                
+                                                else {
+                                                    Text("Uncategorized") // 수정됨
+                                                        .font(.caption)
+                                                        .foregroundStyle(inverseOnCard.opacity(0.8))
+                                                }
                                                 
                                                 Spacer()
                                                 
@@ -264,11 +287,15 @@ struct MainPage: View {
                         } label: {
                             HStack {
                                 Image(systemName: "line.3.horizontal.decrease.circle")
+                                    .renderingMode(.original)
                                     .foregroundStyle(.white)
                                 Text("전체")
                             }
                         }
                         ForEach(categories) { category in
+                            
+                            let fg = Color.from255(r: category.r, g: category.g, b: category.b)
+                            
                             Button {
                                 if let current = selectedCategory,
                                    current.persistentModelID == category.persistentModelID {
@@ -279,8 +306,9 @@ struct MainPage: View {
                             } label: {
                                 HStack {
                                     // 카테고리 아이콘 + 색상
-                                    let fg = Color.from255(r: category.r, g: category.g, b: category.b)
                                     Image(systemName: category.icon)
+                                        .renderingMode(.original)
+                                        .symbolRenderingMode(.monochrome)
                                         .foregroundStyle(fg)
                                     Text(category.name)
                                     if let current = selectedCategory,
@@ -290,13 +318,14 @@ struct MainPage: View {
                                     }
                                 }
                             }
+                            .tint(fg)
                         }
                     } label: {
                         HStack(spacing: 6) {
                             if let current = selectedCategory {
                                 let fg = Color.from255(r: current.r, g: current.g, b: current.b)
                                 Image(systemName: current.icon)
-                                    .foregroundStyle(.white) // 툴바는 어두운 배경, 흰색 유지
+                                    .foregroundStyle(fg) // 툴바는 어두운 배경, 흰색 유지
                                 Text(current.name)
                                     .foregroundStyle(.white) // on header background
                             } else {
