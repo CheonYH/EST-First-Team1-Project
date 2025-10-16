@@ -14,7 +14,7 @@ struct EST_First_Team1_ProjectApp: App {
         let schema = Schema([
             EntryModel.self,
             CategoryModel.self,
-            ColorModel.self,
+            
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
