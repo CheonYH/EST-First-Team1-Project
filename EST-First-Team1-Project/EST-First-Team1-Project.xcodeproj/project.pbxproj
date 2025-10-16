@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		2578A53E2E9F98E100986AE0 /* EST-First-Team1-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EST-First-Team1-Project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF36EA5C2E9F8B47005C7F11 /* EST-First-Team1-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EST-First-Team1-Project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -33,7 +33,7 @@
 			isa = PBXGroup;
 			children = (
 				25F97A672E9E3D870048AE31 /* EST-First-Team1-Project */,
-				2578A53E2E9F98E100986AE0 /* EST-First-Team1-Project.app */,
+				CF36EA5C2E9F8B47005C7F11 /* EST-First-Team1-Project.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -59,7 +59,7 @@
 			packageProductDependencies = (
 			);
 			productName = "EST-First-Team1-Project";
-			productReference = 2578A53E2E9F98E100986AE0 /* EST-First-Team1-Project.app */;
+			productReference = CF36EA5C2E9F8B47005C7F11 /* EST-First-Team1-Project.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
