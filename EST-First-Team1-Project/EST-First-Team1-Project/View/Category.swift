@@ -132,19 +132,10 @@ struct Category: View {
                 .background(Color.black)
             }
             .navigationTitle("카테고리")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                        }
-                        .foregroundColor(.white)
-                    }
-
-                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { isShowingAddSheet = true }) {
                         Image(systemName: "plus.circle.fill")
@@ -237,11 +228,11 @@ struct CategoryEditorView: View {
                 Form {
                     Section(header: Text("기본 정보").foregroundColor(.white)) {
                         TextField("카테고리 명", text: $name)
-                            .foregroundColor(.white)
+                            .foregroundColor(.gray)
                             .accentColor(.blue)
                         
                         ColorPicker("색상", selection: $color)
-                            .foregroundColor(.white)
+                            .foregroundColor(.gray)
                         
                         Picker("아이콘", selection: $icon) {
                             ForEach(iconOptions, id: \.systemName) { item in
@@ -252,7 +243,7 @@ struct CategoryEditorView: View {
                                 .tag(item.systemName)
                             }
                         }
-                        .foregroundColor(.white)
+                        .foregroundColor(.gray)
                     }
                     
                     Section {
