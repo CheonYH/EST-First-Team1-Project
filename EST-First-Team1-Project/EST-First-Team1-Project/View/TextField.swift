@@ -213,6 +213,7 @@ struct ContentView: View {
                 Text(alertMessage)
             }
         }
+        .navigationViewStyle(.stack)
     }
 }
 
@@ -335,7 +336,7 @@ private struct BottomSafeAreaBackground: View {
             color
                 .frame(height: geo.safeAreaInsets.bottom)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                .ignoresSafeArea()
+                .ignoresSafeArea(edges: .bottom)
         }
         .frame(height: 0)
     }
