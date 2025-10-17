@@ -37,7 +37,7 @@
 |:---:|:---:|:---:|:---:|:---:|
 | <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/6863b073-e682-4cbb-8106-5b6a647ed288" alt="이찬희" /> | <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/ea5c7812-dbab-44b2-8532-5a0dea6ff7a9" alt="김대현" /> | <img width="200" height="200" alt="star" src="https://github.com/user-attachments/assets/3b70fece-9602-4ef0-976b-864cd9bc5f18" alt="김두열" /> | <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/98491ccd-a8f4-4dc0-8316-98323a94510e" alt="여승위"/> | <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/e2bfd524-b4ed-4ecf-9656-7e133cad6f6f" alt="천용위" /> |
 | **iOS** | **iOS** | **iOS** | **iOS** | **iOS** |
-| **[이찬희](https://github.com/KyleLee02)**<br> | **[김대현](https://github.com/Lala-roid)**<br> | **[김두열]()**<br> | **[여승위](https://github.com/yeobare-blip)**<br> | **[천용위](https://github.com/CheonYH)**<br> |
+| **[이찬희](https://github.com/KyleLee02)**<br> | **[김대현](https://github.com/Lala-roid)**<br> | **[김두열](https://github.com/hienzld-dotcom)**<br> | **[여승위](https://github.com/yeobare-blip)**<br> | **[천용위](https://github.com/CheonYH)**<br> |
 | 개발 / 기획 / 문서작성 | 개발 / 초기 기획 / PPT 제작 | 개발 / 통계  | 개발 / 문서작성 / 디자인 | 개발 / 데이터 관리 / 깃 허브 관리 |
 
 
