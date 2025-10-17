@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-// SwiftData
+// MARK: - SwiftData Model
 @Model
 final class Note {
     var title: String
@@ -24,31 +24,27 @@ final class Note {
     }
 }
 
+// MARK: - ContentView
 struct ContentView: View {
-    // SwiftData 컨텍스트 (저장용)
     @Environment(\.modelContext) private var context
 
     @State private var selectedCategoryName: String? = nil
     private let categories = ["여행", "메모", "할 일", "운동"]
 
-    // 저장 실패 알림
     @State private var showSaveAlert = false
     @State private var alertMessage = ""
 
     var body: some View {
         NavigationView {
-            VStack {
-                // ===== 상단 타이틀 + 드롭다운 버튼 =====
+            VStack(spacing: 0) {
+                // 상단 타이틀 + 드롭다운 버튼
                 HStack {
                     Menu {
                         Button("전체") { selectedCategoryName = nil }
+
                         ForEach(categories, id: \.self) { name in
                             Button {
-                                if selectedCategoryName == name {
-                                    selectedCategoryName = nil
-                                } else {
-                                    selectedCategoryName = name
-                                }
+                                selectedCategoryName = (selectedCategoryName == name) ? nil : name
                             } label: {
                                 HStack {
                                     Text(name)
@@ -62,20 +58,21 @@ struct ContentView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Text(selectedCategoryName ?? "카테고리를 선택하세요")
-                                .font(.largeTitle)
+                                .font(.title)
                                 .bold()
                             Image(systemName: "chevron.down")
                                 .font(.system(size: 20, weight: .semibold))
                                 .offset(y: 2)
                         }
                         .foregroundStyle(.black)
+                        .contentShape(Rectangle()) // 터치 영역 향상
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
-                    .padding(.top, 8)
                 }
+                .padding(.horizontal)
+                .padding(.top, 8)
 
-                // ===== 본문 =====
+                // 본문
                 DateHeaderAndEditor(
                     dateString: "2025.10.14",
                     onSave: { title, body in
@@ -83,6 +80,7 @@ struct ContentView: View {
                     }
                 )
             }
+            .padding(.top, 60) // 상단 안전영역과 간격
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     Button { } label: {
@@ -98,9 +96,9 @@ struct ContentView: View {
         }
     }
 
-// 저장 로직 (검증 포함)
+    // MARK: 저장 로직 (검증 포함)
     private func handleSave(title: String, body: AttributedString) {
-// 1) 검증
+        // 1) 검증
         guard let category = selectedCategoryName, !category.isEmpty else {
             alertMessage = "카테고리를 선택하세요."
             showSaveAlert = true
@@ -112,7 +110,7 @@ struct ContentView: View {
             return
         }
 
-// 2) 실제 저장 (SwiftData)
+        // 2) 저장
         let note = Note(title: title, category: category, body: body)
         context.insert(note)
         do {
@@ -124,20 +122,19 @@ struct ContentView: View {
     }
 }
 
-// 텍스트 박스 구역
+// MARK: - DateHeaderAndEditor
 struct DateHeaderAndEditor: View {
     let dateString: String
 
-    // 내부 상태
     @State private var attributedText: AttributedString = ""
     @State private var textSelection = AttributedTextSelection()
     @State private var title: String = ""
 
-    // 저장 트리거 (부모로 title/body 전달)
     var onSave: (_ title: String, _ body: AttributedString) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
+
             // Header
             ZStack {
                 Rectangle()
@@ -150,19 +147,17 @@ struct DateHeaderAndEditor: View {
             .frame(height: 40)
 
             // Title Field
-            VStack {
-                ZStack(alignment: .topLeading) {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.15))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+            ZStack(alignment: .topLeading) {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.15))
+                    .frame(height: 50)
 
-                    TextField("Title", text: $title)
-                        .font(.system(size: 17))
-                        .padding(.top, 15)
-                        .padding(.horizontal, 15)
-                        .foregroundStyle(.black)
-                }
+                TextField("Title", text: $title)
+                    .font(.system(size: 17))
+                    .padding(.top, 15)
+                    .padding(.horizontal, 15)
+                    .foregroundStyle(.black)
+                    .textInputAutocapitalization(.sentences)
             }
 
             Divider()
@@ -171,7 +166,7 @@ struct DateHeaderAndEditor: View {
 
             // Rich Text Editor
             ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 0, style: .continuous)
+                Rectangle()
                     .fill(Color.gray.opacity(0.15))
 
                 if attributedText.characters.isEmpty {
@@ -184,8 +179,7 @@ struct DateHeaderAndEditor: View {
                 EditorView(
                     text: $attributedText,
                     selection: $textSelection,
-                    title: $title,
-                    onSave: { onSave(title, attributedText) } // ← 여기서 부모로 전달
+                    onSave: { onSave(title, attributedText) }
                 )
                 .font(.system(size: 17))
                 .padding(.top, 15)
@@ -196,20 +190,17 @@ struct DateHeaderAndEditor: View {
             }
         }
         .mask(RoundedRectangle(cornerRadius: 0, style: .continuous))
-        .frame(maxHeight: .infinity, alignment: .top)
         .ignoresSafeArea(.container, edges: .bottom)
         .compositingGroup()
         .shadow(color: .black.opacity(0.03), radius: 2, y: 1)
     }
 }
 
-// 상단 둥근 사각형
+// MARK: - Shape
 struct TopRoundedRectangle: Shape {
     var cornerRadius: CGFloat = 16
-
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        // 상단 좌/우만 둥글게 처리
         path.move(to: CGPoint(x: 0, y: cornerRadius))
         path.addArc(center: CGPoint(x: cornerRadius, y: cornerRadius),
                     radius: cornerRadius,
@@ -229,81 +220,50 @@ struct TopRoundedRectangle: Shape {
     }
 }
 
-// RichText 에디터
+// MARK: - RichText Editor
 struct EditorView: View {
     @Environment(\.fontResolutionContext) var fontResolutionContext
     @Binding var text: AttributedString
     @Binding var selection: AttributedTextSelection
 
-    // Title도 같이 받아서 저장 시 사용
-    @Binding var title: String
-
-    // 저장 트리거
     var onSave: () -> Void
 
-    // (옵션) 색상 피커 복원하려면 사용
-    @State private var textColor = Color(.sRGB, red: 0.98, green: 0.9, blue: 0.2)
-
     var body: some View {
-        VStack {
-            TextEditor(text: $text, selection: $selection)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Button("Bold", systemImage: "bold") {
-                            text.transformAttributes(in: &selection) { container in
-                                let currentFont = container.font ?? .default
-                                let resolved = currentFont.resolve(in: fontResolutionContext)
-                                container.font = currentFont.bold(!resolved.isBold)
-                            }
-                        }
-                        Button("Italic", systemImage: "italic") {
-                            text.transformAttributes(in: &selection) { container in
-                                let currentFont = container.font ?? .default
-                                let resolved = currentFont.resolve(in: fontResolutionContext)
-                                container.font = currentFont.italic(!resolved.isItalic)
-                            }
-                        }
-                        Button("Underline", systemImage: "underline") {
-                            text.transformAttributes(in: &selection) { container in
-                                if container.underlineStyle == .single {
-                                    container.underlineStyle = .none
-                                } else {
-                                    container.underlineStyle = .single
-                                }
-                            }
-                        }
-                        Button("Strikethrough", systemImage: "strikethrough") {
-                            text.transformAttributes(in: &selection) { container in
-                                if container.strikethroughStyle == .single {
-                                    container.strikethroughStyle = .none
-                                } else {
-                                    container.strikethroughStyle = .single
-                                }
-                            }
-                        }
-                        // ColorPicker("Text Color", selection: $textColor).labelsHidden()
-
-                        Spacer()
-
-                        // ✅ 저장 & 완료
-                        Button {
-                            onSave()
-                        } label: {
-                            Label("Done", systemImage: "square.and.pencil")
+        TextEditor(text: $text, selection: $selection)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Button("Bold", systemImage: "bold") {
+                        text.transformAttributes(in: &selection) { container in
+                            let current = container.font ?? .default
+                            let resolved = current.resolve(in: fontResolutionContext)
+                            container.font = current.bold(!resolved.isBold)
                         }
                     }
+                    Button("Italic", systemImage: "italic") {
+                        text.transformAttributes(in: &selection) { container in
+                            let current = container.font ?? .default
+                            let resolved = current.resolve(in: fontResolutionContext)
+                            container.font = current.italic(!resolved.isItalic)
+                        }
+                    }
+                    Button("Underline", systemImage: "underline") {
+                        text.transformAttributes(in: &selection) { container in
+                            container.underlineStyle = (container.underlineStyle == .single) ? .none : .single
+                        }
+                    }
+                    Button("Strikethrough", systemImage: "strikethrough") {
+                        text.transformAttributes(in: &selection) { container in
+                            container.strikethroughStyle = (container.strikethroughStyle == .single) ? .none : .single
+                        }
+                    }
+                    Spacer()
+                    Button {
+                        onSave()
+                    } label: {
+                        Label("Done", systemImage: "square.and.pencil")
+                    }
                 }
-        }
-    }
-}
-
-// 편의 생성자 (selection 불필요)
-extension EditorView {
-    init(text: Binding<AttributedString>, title: Binding<String>, onSave: @escaping () -> Void) {
-        self._text = text
-        self._selection = .constant(AttributedTextSelection())
-        self._title = title
-        self.onSave = onSave
+            }
     }
 }
 
