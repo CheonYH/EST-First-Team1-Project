@@ -97,10 +97,10 @@ struct Category: View {
     @State private var editingCategory: CategoryModel? = nil
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color(red: 53/255, green: 53/255, blue: 53/255).ignoresSafeArea()
-
+                
                 if cate.isEmpty {
                     VStack(spacing: 12) {
                         Image(systemName: "folder.badge.plus")
@@ -124,7 +124,7 @@ struct Category: View {
                                         .frame(width: 36, height: 36)
                                         .background(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a).opacity(0.15))
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
-
+                                    
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(category.name)
                                             .font(.headline)
@@ -141,12 +141,9 @@ struct Category: View {
                     .background(Color.black)
                 }
             }
-
             .navigationTitle("카테고리")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { isShowingAddSheet = true }) {
                         Image(systemName: "plus.circle.fill")
@@ -168,7 +165,6 @@ struct Category: View {
                 )
             }
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     /// 선택한 인덱스의 카테고리를 **영구 삭제**합니다.
@@ -232,7 +228,7 @@ struct CategoryEditorView: View {
     ]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.black.ignoresSafeArea()
                 
@@ -279,7 +275,6 @@ struct CategoryEditorView: View {
             .toolbarBackground(Color.black, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
-        .navigationViewStyle(.stack)
         .onAppear {
             if let t = target {
                 name = t.name
