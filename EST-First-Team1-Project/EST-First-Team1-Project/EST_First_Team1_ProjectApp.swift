@@ -28,7 +28,7 @@ struct EST_First_Team1_ProjectApp: App {
     var body: some Scene {
         WindowGroup {
             // 앱의 루트 뷰를 지정하세요. 현재 카테고리 화면을 띄우도록 설정합니다.
-            // Category()
+            MainPage()
         }
         .modelContainer(sharedModelContainer)
     }
