@@ -99,52 +99,54 @@ struct Category: View {
     var body: some View {
         NavigationView {
             ZStack {
-                
-                Color.black.ignoresSafeArea()
+                Color(red: 53/255, green: 53/255, blue: 53/255).ignoresSafeArea()
 
-                List {
-                    ForEach(cate) { category in
-                        Button {
-                            editingCategory = category
-                        } label: {
-                            HStack(spacing: 12) {
-                                let fgColor = Color.from255(r: category.r, g: category.g, b: category.b)
-                                Image(systemName: category.icon)
-                                    .foregroundColor(fgColor)
-                                    .font(.title2)
-                                    .frame(width: 36, height: 36)
-                                    .background(fgColor.opacity(0.15))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(category.name)
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                }
-                            }
-                            .padding(.vertical, 6)
-                        }
+                if cate.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "folder.badge.plus")
+                            .font(.system(size: 48))
+                            .foregroundColor(.white)
+                        Text("카테고리를 추가해 주세요")
+                            .foregroundColor(.white)
+                            .font(.headline)
                     }
-                    .onDelete(perform: deleteRows)
-                    .listRowBackground(Color.black)
+                    .multilineTextAlignment(.center)
+                } else {
+                    List {
+                        ForEach(cate, id: \.persistentModelID) { category in
+                            Button {
+                                editingCategory = category
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: category.icon)
+                                        .foregroundColor(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a))
+                                        .font(.title2)
+                                        .frame(width: 36, height: 36)
+                                        .background(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a).opacity(0.15))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(category.name)
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                                .padding(.vertical, 6)
+                            }
+                        }
+                        .onDelete(perform: deleteRows)
+                        .listRowBackground(Color.black)
+                    }
+                    .scrollContentBackground(.hidden)
+                    .background(Color.black)
                 }
-                .scrollContentBackground(.hidden)
-                .background(Color.black)
             }
+
             .navigationTitle("카테고리")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                        }
-                        .foregroundColor(.white)
-                    }
-
-                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { isShowingAddSheet = true }) {
                         Image(systemName: "plus.circle.fill")
@@ -237,11 +239,11 @@ struct CategoryEditorView: View {
                 Form {
                     Section(header: Text("기본 정보").foregroundColor(.white)) {
                         TextField("카테고리 명", text: $name)
-                            .foregroundColor(.white)
+                            .foregroundColor(.gray)
                             .accentColor(.blue)
                         
                         ColorPicker("색상", selection: $color)
-                            .foregroundColor(.white)
+                            .foregroundColor(.gray)
                         
                         Picker("아이콘", selection: $icon) {
                             ForEach(iconOptions, id: \.systemName) { item in
@@ -252,7 +254,7 @@ struct CategoryEditorView: View {
                                 .tag(item.systemName)
                             }
                         }
-                        .foregroundColor(.white)
+                        .foregroundColor(.gray)
                     }
                     
                     Section {
@@ -281,7 +283,7 @@ struct CategoryEditorView: View {
         .onAppear {
             if let t = target {
                 name = t.name
-                color = Color.from255(r: t.r, g: t.g, b: t.b)
+                color = Color.from255(r: t.r, g: t.g, b: t.b, a: t.a)
                 icon  = t.icon
             }
         }
@@ -342,3 +344,4 @@ struct CategoryListView_Previews: PreviewProvider {
             .modelContainer(for: CategoryModel.self)
     }
 }
+

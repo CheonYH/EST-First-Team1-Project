@@ -10,6 +10,7 @@ import SwiftData
 
 @main
 struct EST_First_Team1_ProjectApp: App {
+    @AppStorage("hasSeenIntro") private var hasSeenIntro = false
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             EntryModel.self,
@@ -25,10 +26,14 @@ struct EST_First_Team1_ProjectApp: App {
         }
     }()
 
+
     var body: some Scene {
         WindowGroup {
-            // 앱의 루트 뷰를 지정하세요. 현재 카테고리 화면을 띄우도록 설정합니다.
-            // Category()
+            if hasSeenIntro {
+                MainPage() // 인트로 본 이후엔 바로 메인화면
+            } else {
+                IntroView() // 첫 실행 시
+            }
         }
         .modelContainer(sharedModelContainer)
     }

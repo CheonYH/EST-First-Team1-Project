@@ -20,13 +20,15 @@ import SwiftData
 @Model
 final class CategoryModel {
     
-    
-    @Attribute(.unique) var id: UUID = UUID()
+    /// 카테고리를 구별하는 **식별자**입니다.
+    /// 기본값은 `UUID()`이며 중복되지 않아야 합니다.
+    var id: UUID = UUID()
     
     /// 카테고리의 ** 이름 **입니다.
     /// 동일 이름이 중복 저장되지 않도록 고유(unique) 제약을 둡니다.
     @Attribute(.unique) var name: String
     
+    /// 카테고리에 적용된  ** 아이콘의 이름 ** 입니다. (SF Symbols 또는 에셋 이름)
     var icon: String
    
     
@@ -35,7 +37,8 @@ final class CategoryModel {
     @Relationship(deleteRule: .nullify, inverse: \EntryModel.category)
     var entries: [EntryModel] = []
     
-    
+    /// 카테고리에 적용된 **아이콘의 색의 RGBA값 **을 저장하는 프로퍼티들 입니다.
+    /// 각 값은 0~255 범위를 가집니다.
     var r: Int
     var g: Int
     var b: Int

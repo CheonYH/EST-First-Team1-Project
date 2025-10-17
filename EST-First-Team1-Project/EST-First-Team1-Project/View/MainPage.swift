@@ -5,7 +5,6 @@
 //  Created by 이찬희 on 10/16/25.
 //
 
-
 import SwiftUI
 import SwiftData
 
@@ -17,8 +16,9 @@ struct MainPage: View {
     @Query(sort: [SortDescriptor(\EntryModel.createdAt, order: .reverse)])
     private var entries: [EntryModel]
     
-    // 카테고리(표시용)
-    @Query private var categories: [CategoryModel]
+    // 카테고리(표시용),
+    @Query(sort: [SortDescriptor(\CategoryModel.name, order: .forward)])
+    private var categories: [CategoryModel]
     
     @State private var searchText = ""
     // 햄버거 버튼 상태 메시지(비옵셔널로 단순화, 비어있으면 표시 없음으로 취급)
@@ -29,7 +29,10 @@ struct MainPage: View {
     @State private var selectedCategory: CategoryModel? = nil
     // 카테고리 화면 네비게이션 트리거
     @State private var navigateToCategory: Bool = false
-    
+    // 텍스트 에디터(텍스트필드 페이지) 네비게이션 트리거
+    @State private var navigateToTextEditor: Bool = false
+    // 통계 화면 네비게이션 트리거
+    @State private var navigateToStatusView: Bool = false
     // 다크/라이트 대응 색상
     private var appBackground: Color {
         scheme == .dark
@@ -66,13 +69,31 @@ struct MainPage: View {
             $0.content.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+    // 바디
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 // 숨겨진 네비게이션 링크: 상태로 Category 화면으로 푸시
                 NavigationLink(isActive: $navigateToCategory) {
                     Category()
+                        .navigationBarTitleDisplayMode(.inline)
+                } label: {
+                    EmptyView()
+                }
+                .hidden()
+                
+                // 숨겨진 네비게이션 링크: 상태로 텍스트 에디터(ContentView) 화면으로 푸시
+                NavigationLink(isActive: $navigateToTextEditor) {
+                    ContentView()
+                        .navigationBarTitleDisplayMode(.inline)
+                } label: {
+                    EmptyView()
+                }
+                .hidden()
+                
+                
+                NavigationLink(isActive: $navigateToStatusView) {
+                    StatusView()
                         .navigationBarTitleDisplayMode(.inline)
                 } label: {
                     EmptyView()
@@ -92,20 +113,12 @@ struct MainPage: View {
                                 .foregroundStyle(.white.opacity(0.6))
                         }
                         Spacer()
-                        // add new 버튼
+                        // 새 기록 버튼
                         Button {
-                            let now = Date()
-                            do {
-                                _ = try EntryCRUD.create(context: ctx,
-                                                         title: "New Entry",
-                                                         createdAt: now,
-                                                         content: "")
-                            } catch {
-                                print("저장 실패: \(error)")
-                                statusMessage = "저장에 실패했습니다."
-                            }
+                            // 텍스트필드 페이지로 이동
+                            navigateToTextEditor = true
                         } label: {
-                            Text("Add New")
+                            Text("새 기록")
                                 .font(.system(size: 16, weight: .semibold))
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 10)
@@ -119,7 +132,7 @@ struct MainPage: View {
                     
                     // "My Work" 라벨 + 둥근 사각형 배경
                     HStack {
-                        Text("My Work")
+                        Text("My Memory")
                             .font(.headline)
                             .foregroundStyle(primaryText)
                             .padding(.horizontal, -2)
@@ -183,9 +196,31 @@ struct MainPage: View {
                                             HStack {
                                                 // 수정: 관계 타입 불일치에 따른 컴파일 에러를 방지하기 위해
                                                 //       카테고리 이름 접근 대신 고정 라벨 유지
-                                                Text("Uncategorized") // 수정됨
-                                                    .font(.caption)
-                                                    .foregroundStyle(inverseOnCard.opacity(0.8))
+                                                
+                                                if let cat = e.category {
+                                                    let fg = Color.from255(r: cat.r, g: cat.g, b: cat.b)
+                                                    
+                                                    HStack(spacing: 6) {
+                                                        Image(systemName: cat.icon)
+                                                            .font(.caption)
+                                                            .foregroundStyle(fg)
+                                                        Text(cat.name)
+                                                            .font(.caption)
+                                                            .foregroundStyle(inverseOnCard.opacity(0.9))
+                                                    }
+                                                    .padding(.horizontal, 8)
+                                                    .padding(.vertical, 4)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                                            .fill(cardBackground.opacity(0.6))
+                                                    )
+                                                }
+                                                
+                                                else {
+                                                    Text("Uncategorized") // 수정됨
+                                                        .font(.caption)
+                                                        .foregroundStyle(inverseOnCard.opacity(0.8))
+                                                }
                                                 
                                                 Spacer()
                                                 
@@ -232,19 +267,18 @@ struct MainPage: View {
                 // 왼쪽: 햄버거 -> 카테고리 목록 보기(표시만)
                 ToolbarItem(placement: .navigationBarLeading) {
                     Menu {
-                        Button("달력", systemImage: "calendar") {
-                            statusMessage = "달력 선택됨"
+                        Button("새 기록", systemImage: "plus.app") {
+                            // 텍스트필드 페이지로 이동
+                            navigateToTextEditor = true
                         }
                         Button("통계", systemImage: "chart.bar") {
-                            statusMessage = "통계 선택됨"
+                            navigateToStatusView = true
                         }
                         Button("카테고리 생성", systemImage: "rectangle.stack.badge.plus") {
                             // Category 화면으로 네비게이션
                             navigateToCategory = true
                         }
-                        Button("설정", systemImage: "gearshape") {
-                            statusMessage = "설정 선택됨"
-                        }
+                        
                     } label: {
                         // If you have separate dark/light assets, Asset Catalog variants will switch automatically.
                         // If not, tint the template image to match scheme.
@@ -258,8 +292,20 @@ struct MainPage: View {
                 // 가운데(제목 영역): 카테고리 토글 메뉴
                 ToolbarItem(placement: .principal) {
                     Menu {
-                        Button("전체") { selectedCategory = nil }
+                        Button {
+                            selectedCategory = nil
+                        } label: {
+                            HStack {
+                                Image(systemName: "line.3.horizontal.decrease.circle")
+                                    .renderingMode(.original)
+                                    .foregroundStyle(.white)
+                                Text("전체")
+                            }
+                        }
                         ForEach(categories) { category in
+                            
+                            let fg = Color.from255(r: category.r, g: category.g, b: category.b)
+                            
                             Button {
                                 if let current = selectedCategory,
                                    current.persistentModelID == category.persistentModelID {
@@ -269,6 +315,11 @@ struct MainPage: View {
                                 }
                             } label: {
                                 HStack {
+                                    // 카테고리 아이콘 + 색상
+                                    Image(systemName: category.icon)
+                                        .renderingMode(.original)
+                                        .symbolRenderingMode(.monochrome)
+                                        .foregroundStyle(fg)
                                     Text(category.name)
                                     if let current = selectedCategory,
                                        current.persistentModelID == category.persistentModelID {
@@ -277,10 +328,14 @@ struct MainPage: View {
                                     }
                                 }
                             }
+                            .tint(fg)
                         }
                     } label: {
                         HStack(spacing: 6) {
                             if let current = selectedCategory {
+                                let fg = Color.from255(r: current.r, g: current.g, b: current.b)
+                                Image(systemName: current.icon)
+                                    .foregroundStyle(fg) // 툴바는 어두운 배경, 흰색 유지
                                 Text(current.name)
                                     .foregroundStyle(.white) // on header background
                             } else {
@@ -291,6 +346,10 @@ struct MainPage: View {
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundStyle(.white)
                         }
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(width: 180, height: 30, alignment: .center)
+                        
                     }
                 }
                 
