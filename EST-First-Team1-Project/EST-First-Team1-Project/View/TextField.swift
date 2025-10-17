@@ -35,7 +35,7 @@ struct ContentView: View {
     @State private var showSaveAlert = false
     @State private var alertMessage = ""
 
-    // MARK: - MainPage 색상과 동일한 팔레트(네가 준 값 반영)
+    // MARK: - MainPage 색상 팔레트
     private var appBackground: Color {
         scheme == .dark
         ? Color(red: 28/255, green: 28/255, blue: 30/255)
@@ -68,7 +68,6 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // 상단 전체 배경 (SafeArea 포함)
                 appBackground.ignoresSafeArea()
 
                 VStack(spacing: 0) {
@@ -111,7 +110,7 @@ struct ContentView: View {
 
                     // MARK: 본문 영역
                     DateHeaderAndEditor(
-                        dateString: "2025.10.14",
+                        dateString: "2025.10.14", // 시그니처 유지용(표시는 DatePicker가 담당)
                         colors: EditorColors(
                             appBackground: appBackground,
                             listBackground: listBackground,
@@ -122,8 +121,8 @@ struct ContentView: View {
                             secondaryText: secondaryText,
                             inverseOnCard: inverseOnCard
                         ),
-                        onSave: { title, body in
-                            handleSave(title: title, body: body)
+                        onSave: { title, body, date in
+                            handleSave(title: title, body: body, date: date)
                         }
                     )
                 }
@@ -150,7 +149,7 @@ struct ContentView: View {
     }
 
     // MARK: - 저장 로직
-    private func handleSave(title: String, body: AttributedString) {
+    private func handleSave(title: String, body: AttributedString, date: Date) {
         guard let category = selectedCategoryName, !category.isEmpty else {
             alertMessage = "카테고리를 선택하세요."
             showSaveAlert = true
@@ -162,7 +161,7 @@ struct ContentView: View {
             return
         }
 
-        let note = Note(title: title, category: category, body: body)
+        let note = Note(title: title, category: category, body: body, createdAt: date)
         context.insert(note)
         do {
             try context.save()
@@ -193,35 +192,43 @@ struct DateHeaderAndEditor: View {
     @State private var attributedText: AttributedString = ""
     @State private var textSelection = AttributedTextSelection()
     @State private var title: String = ""
+    @State private var date: Date = .now
 
-    var onSave: (_ title: String, _ body: AttributedString) -> Void
+    var onSave: (_ title: String, _ body: AttributedString, _ date: Date) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            // 날짜 헤더
+            // 날짜 헤더 → DatePicker(기본 today)
             ZStack {
                 Rectangle()
                     .fill(colors.dateBackground)
                     .clipShape(TopRoundedRectangle(cornerRadius: 30))
-                Text(dateString)
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(colors.primaryText.opacity(0.85))
+
+                DatePicker(
+                    "",
+                    selection: $date,
+                    displayedComponents: [.date]
+                )
+                .labelsHidden()
+                .datePickerStyle(.compact)
+                .tint(colors.primaryText)
+                .foregroundStyle(colors.primaryText)
             }
             .frame(height: 40)
 
-            // Title Field (커스텀 플레이스홀더: Title과 동일 색상)
+            // Title Field (커스텀 플레이스홀더)
             ZStack(alignment: .topLeading) {
                 colors.textBackground
                     .frame(height: 50)
 
                 if title.isEmpty {
                     Text("Title")
-                        .foregroundStyle(colors.primaryText) // ✅ 요청: Title과 동일 색
+                        .foregroundStyle(colors.primaryText)
                         .padding(.top, 15)
                         .padding(.horizontal, 15)
                 }
 
-                TextField("", text: $title) // placeholder는 위 Text로 대체
+                TextField("", text: $title)
                     .font(.system(size: 17))
                     .padding(.top, 15)
                     .padding(.horizontal, 15)
@@ -239,7 +246,7 @@ struct DateHeaderAndEditor: View {
 
                 if attributedText.characters.isEmpty {
                     Text("Text")
-                        .foregroundStyle(colors.primaryText) // ✅ 요청: Title과 동일 색
+                        .foregroundStyle(colors.primaryText)
                         .padding(.top, 15)
                         .padding(.horizontal, 15)
                 }
@@ -247,8 +254,8 @@ struct DateHeaderAndEditor: View {
                 EditorView(
                     text: $attributedText,
                     selection: $textSelection,
-                    onSave: { onSave(title, attributedText) },
-                    textColor: colors.primaryText // 실제 본문 글자색 (가독성)
+                    onSave: { onSave(title, attributedText, date) }, // ✅ 날짜까지 전달
+                    textColor: colors.primaryText
                 )
                 .font(.system(size: 17))
                 .padding(.top, 15)
