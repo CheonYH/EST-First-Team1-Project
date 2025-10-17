@@ -45,10 +45,12 @@ struct ContentView: View {
         scheme == .dark ? Color.black.opacity(0.05) : Color.white
     }
     private var textBackground: Color {
-        scheme == .dark ? Color.white.opacity(0.95) : Color.white.opacity(0.95)
+        scheme == .dark ? Color.white/*.opacity(0.95)*/ : Color.white/*.opacity(0.95)*/
     }
     private var dateBackground: Color {
-        scheme == .dark ? Color.white.opacity(0.55) : Color.white.opacity(0.55)
+        scheme == .dark
+        ? Color(red: 158/255, green: 158/255, blue: 159/255)
+        : Color(red: 158/255, green: 158/255, blue: 159/255)
     }
     private var cardBackground: Color {
         scheme == .dark
@@ -71,6 +73,11 @@ struct ContentView: View {
                 appBackground.ignoresSafeArea()
 
                 VStack(spacing: 0) {
+                    Text("메모")
+                        .font(.headline).fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .padding(.bottom, 30)
+                        .offset(y: -43)
                     // MARK: 상단 헤더
                     VStack(spacing: 12) {
                         HStack {
@@ -107,6 +114,7 @@ struct ContentView: View {
                         .padding(.bottom, 8)
                     }
                     .background(appBackground)
+                    .padding(10) // 카테고리 타이틀-Date메뉴 사이 패딩
 
                     // MARK: 본문 영역
                     DateHeaderAndEditor(
@@ -125,19 +133,6 @@ struct ContentView: View {
                             handleSave(title: title, body: body, date: date)
                         }
                     )
-                }
-            }
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    Button { } label: {
-                        Label("dismiss", systemImage: "chevron.left")
-                            .foregroundStyle(.white)
-                    }
-                }
-                ToolbarItem(placement: .principal) {
-                    Text("메모")
-                        .font(.headline).fontWeight(.semibold)
-                        .foregroundStyle(.white)
                 }
             }
             .alert("저장할 수 없어요", isPresented: $showSaveAlert) {
@@ -198,7 +193,7 @@ struct DateHeaderAndEditor: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 날짜 헤더 → DatePicker(기본 today)
+            // 날짜 헤더 & DatePicker(기본 today)
             ZStack {
                 Rectangle()
                     .fill(colors.dateBackground)
@@ -220,14 +215,12 @@ struct DateHeaderAndEditor: View {
             ZStack(alignment: .topLeading) {
                 colors.textBackground
                     .frame(height: 50)
-
                 if title.isEmpty {
                     Text("Title")
-                        .foregroundStyle(colors.primaryText)
+                        .foregroundStyle(colors.secondaryText)
                         .padding(.top, 15)
                         .padding(.horizontal, 15)
                 }
-
                 TextField("", text: $title)
                     .font(.system(size: 17))
                     .padding(.top, 15)
@@ -246,20 +239,19 @@ struct DateHeaderAndEditor: View {
 
                 if attributedText.characters.isEmpty {
                     Text("Text")
-                        .foregroundStyle(colors.primaryText)
+                        .foregroundStyle(colors.secondaryText)
                         .padding(.top, 15)
                         .padding(.horizontal, 15)
                 }
-
                 EditorView(
                     text: $attributedText,
                     selection: $textSelection,
-                    onSave: { onSave(title, attributedText, date) }, // ✅ 날짜까지 전달
+                    onSave: { onSave(title, attributedText, date) },
                     textColor: colors.primaryText
                 )
                 .font(.system(size: 17))
-                .padding(.top, 15)
-                .padding(.horizontal, 15)
+                .padding(.top, 15 - 8)
+                .padding(.horizontal, 15 - 5)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
             }
@@ -269,6 +261,23 @@ struct DateHeaderAndEditor: View {
         .compositingGroup()
         .shadow(color: .black.opacity(0.03), radius: 2, y: 1)
         .background(colors.appBackground)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            BottomSafeAreaBackground(color: colors.textBackground)
+        }
+    }
+}
+
+private struct BottomSafeAreaBackground: View {
+    let color: Color
+    var body: some View {
+        GeometryReader { geo in
+            color
+                .frame(height: geo.safeAreaInsets.bottom)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .ignoresSafeArea()
+        }
+
+        .frame(height: 0)
     }
 }
 
