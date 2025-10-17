@@ -99,21 +99,19 @@ struct Category: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.black.ignoresSafeArea()
+                Color("backgroundColor").ignoresSafeArea()
 
                 if cate.isEmpty {
-                    // ✅ 카테고리가 없을 때 표시
                     VStack(spacing: 12) {
                         Image(systemName: "folder.badge.plus")
                             .font(.system(size: 48))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white)
                         Text("카테고리를 추가해 주세요")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white)
                             .font(.headline)
                     }
                     .multilineTextAlignment(.center)
                 } else {
-                    // ✅ 카테고리가 있을 때 기존 리스트 표시
                     List {
                         ForEach(cate, id: \.persistentModelID) { category in
                             Button {
@@ -143,6 +141,7 @@ struct Category: View {
                     .background(Color.black)
                 }
             }
+
             .navigationTitle("카테고리")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
