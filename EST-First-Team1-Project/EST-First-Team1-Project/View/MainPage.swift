@@ -9,6 +9,10 @@ import SwiftUI
 import SwiftData
 
 struct MainPage: View {
+    
+   
+    
+    
     @Environment(\.modelContext) private var ctx
     @Environment(\.colorScheme) private var scheme
     
@@ -58,6 +62,7 @@ struct MainPage: View {
         scheme == .dark ? .white : .white
     }
     
+    
     // 검색 필터 (제목/본문)
     // EntryModel에는 `content`가 없고 `attributedContent`가 있습니다.
     // 단계적으로 나눠 타입체커 부담을 줄이고, 선택 카테고리와 텍스트 검색을 순차 적용합니다.
@@ -80,8 +85,12 @@ struct MainPage: View {
             return title.contains(needle) || body.contains(needle)
         }
     }
+    
+   
     // 바디
     var body: some View {
+        
+        
         NavigationStack {
             VStack(spacing: 0) {
                 // 숨겨진 네비게이션 링크: 상태로 Category 화면으로 푸시
@@ -168,12 +177,19 @@ struct MainPage: View {
                             .listRowBackground(Color.clear)
                         } else {
                             ForEach(filtered, id: \.persistentModelID) { e in
-                                ZStack {
-                                    // 수정 모드로 바로 진입: ContentView(editTarget:)로 네비게이션
-                                    NavigationLink {
-                                        ContentView(editTarget: e)
-                                            .navigationBarTitleDisplayMode(.inline)
-                                    } label: {
+                                
+                                VStack {
+                                    Spacer()
+                                    Text(e.createdAt, format: .dateTime.year().month().day())
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(primaryText)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .padding(.trailing, 12)   // 우측 여백 미세조정
+                                        
+                                    
+                                    
+                                    ZStack {
+                                        
                                         VStack(alignment: .leading, spacing: 8) {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 Text(e.title.isEmpty ? "제목 없음" : e.title)
@@ -216,9 +232,6 @@ struct MainPage: View {
                                                 
                                                 Spacer()
                                                 
-                                                Text(e.createdAt, format: .dateTime.year().month().day())
-                                                    .font(.caption2)
-                                                    .foregroundStyle(inverseOnCard.opacity(0.8))
                                             }
                                         }
                                         .padding(12)
@@ -226,12 +239,21 @@ struct MainPage: View {
                                             RoundedRectangle(cornerRadius: 12, style: .continuous)
                                                 .fill(cardBackground)
                                         )
+                                        
+                                        // 수정 모드로 바로 진입: ContentView(editTarget:)로 네비게이션
+                                        NavigationLink {
+                                            ContentView(editTarget: e)
+                                                .navigationBarTitleDisplayMode(.inline)
+                                        } label: {
+                                            Rectangle().fill(.clear)
+                                        }
+                                       
+                                        .buttonStyle(.plain)
                                     }
-                                    .buttonStyle(.plain)
+                                    .listRowBackground(Color.clear)
+                                    .listRowSeparator(.hidden)
+                                    .padding(.vertical, 4)
                                 }
-                                .listRowBackground(Color.clear)
-                                .listRowSeparator(.hidden)
-                                .padding(.vertical, 4)
                             }
                             .onDelete { idx in
                                 let snapshot = filtered
@@ -250,9 +272,10 @@ struct MainPage: View {
                             }
                         }
                     }
+                    
                     .scrollContentBackground(.hidden)
                     .listStyle(.plain)
-                    .environment(\.defaultMinListRowHeight, 44)
+                    .environment(\.defaultMinListRowHeight, 0)
                 }
             }
             .toolbar {
@@ -382,8 +405,16 @@ private struct ConditionalSearchModifier: ViewModifier {
     }
 }
 
+private extension DateFormatter {
+    static let dottedYMD: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ko_KR") 
+        f.dateFormat = "yyyy.MM.dd"
+        return f
+    }()
+}
+
 #Preview {
     MainPage()
         .modelContainer(for: [EntryModel.self, CategoryModel.self], inMemory: true)
 }
-
