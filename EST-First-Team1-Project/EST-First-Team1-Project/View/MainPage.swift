@@ -68,7 +68,7 @@ struct MainPage: View {
             $0.content.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+    // 바디
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
