@@ -336,6 +336,10 @@ struct MainPage: View {
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundStyle(.white)
                         }
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(width: 180, height: 30, alignment: .center)
+                        
                     }
                 }
                 
