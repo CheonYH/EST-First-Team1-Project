@@ -46,37 +46,37 @@
    * UIUX: ipad(가로, 세로 대응), iphone 대응, Light, Dark Mode 대응
 
 ## 📁 프로젝트 구조
-EST-First-Team1-Project.swift (앱진입점)
+    EST-First-Team1-Project.swift (앱진입점)
 
     /1. Data (데이터 계층)
 
     데이터의 생성, 읽기, 수정, 삭제 (CRUD) 기능을 담당하는 레이어입니다.
 
-CategoryCRUD.swift — 카테고리 관련 데이터 처리 (CRUD)
+    CategoryCRUD.swift — 카테고리 관련 데이터 처리 (CRUD)
 
-EntryCRUD.swift — 엔트리(게시글, 기록 등) 관련 데이터 처리 (CRUD)
+    EntryCRUD.swift — 엔트리(게시글, 기록 등) 관련 데이터 처리 (CRUD)
 
-2. Model (모델 계층)
+    2. Model (모델 계층)
 
-앱의 데이터 구조와 로직을 정의하는 모델 계층입니다.
+    앱의 데이터 구조와 로직을 정의하는 모델 계층입니다.
 
-CategoryModel.swift — 카테고리 데이터 구조 정의
+    CategoryModel.swift — 카테고리 데이터 구조 정의
 
-EntryModel.swift — 엔트리(기록/메모 등) 데이터 구조 정의
+    EntryModel.swift — 엔트리(기록/메모 등) 데이터 구조 정의
 
-3. View (뷰 계층)
+    3. View (뷰 계층)
 
-SwiftUI로 작성된 UI 화면들을 모아둔 레이어입니다.
+    SwiftUI로 작성된 UI 화면들을 모아둔 레이어입니다.
 
-Category.swift — 카테고리 관련 화면
+    Category.swift — 카테고리 관련 화면
 
-IntroView.swift — 앱 인트로(시작) 화면
+    IntroView.swift — 앱 인트로(시작) 화면
 
-MainPage.swift — 메인 페이지 (앱의 핵심 UI)
+    MainPage.swift — 메인 페이지 (앱의 핵심 UI)
 
-StatusView.swift — 상태(예: 진행 현황) 표시 화면
+    StatusView.swift — 상태(예: 진행 현황) 표시 화면
 
-TextField.swift — 텍스트 입력 관련 커스텀 UI 컴포넌트
+    TextField.swift — 텍스트 입력 관련 커스텀 UI 컴포넌트
     
 ## 🖥️ 앱 주요 화면
 
