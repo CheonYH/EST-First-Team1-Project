@@ -49,8 +49,8 @@ struct ContentView: View {
     }
     private var dateBackground: Color {
         scheme == .dark
-        ? Color(red: 163/255, green: 163/255, blue: 163/255)
-        : Color(red: 163/255, green: 163/255, blue: 163/255)
+        ? Color(red: 158/255, green: 158/255, blue: 159/255)
+        : Color(red: 158/255, green: 158/255, blue: 159/255)
     }
     private var cardBackground: Color {
         scheme == .dark
@@ -73,12 +73,13 @@ struct ContentView: View {
                 appBackground.ignoresSafeArea()
 
                 VStack(spacing: 0) {
+                    Text("메모")
+                        .font(.headline).fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .padding(.bottom, 30)
+                        .offset(y: -43)
                     // MARK: 상단 헤더
                     VStack(spacing: 12) {
-                        Text("메모")
-                            .font(.headline).fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding(.bottom, 30)
                         HStack {
                             Menu {
                                 Button("전체") { selectedCategoryName = nil }
@@ -134,19 +135,6 @@ struct ContentView: View {
                     )
                 }
             }
-//            .toolbar {
-//                ToolbarItemGroup(placement: .topBarLeading) {
-//                    Button { } label: {
-//                        Label("dismiss", systemImage: "chevron.left")
-//                            .foregroundStyle(.white)
-//                    }
-//                }
-//                ToolbarItem(placement: .principal) {
-//                    Text("메모")
-//                        .font(.headline).fontWeight(.semibold)
-//                        .foregroundStyle(.white)
-//                }
-//            }
             .alert("저장할 수 없어요", isPresented: $showSaveAlert) {
                 Button("확인", role: .cancel) { }
             } message: {
