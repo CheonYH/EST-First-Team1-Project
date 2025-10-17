@@ -68,7 +68,7 @@ struct MainPage: View {
             $0.content.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+    // 바디
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -336,6 +336,10 @@ struct MainPage: View {
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundStyle(.white)
                         }
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(width: 180, height: 30, alignment: .center)
+                        
                     }
                 }
                 
