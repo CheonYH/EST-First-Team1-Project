@@ -48,9 +48,9 @@
 ## 📁 프로젝트 구조
 EST-First-Team1-Project.swift (앱진입점)
 
-1. Data (데이터 계층)
+    /1. Data (데이터 계층)
 
-데이터의 생성, 읽기, 수정, 삭제 (CRUD) 기능을 담당하는 레이어입니다.
+    데이터의 생성, 읽기, 수정, 삭제 (CRUD) 기능을 담당하는 레이어입니다.
 
 CategoryCRUD.swift — 카테고리 관련 데이터 처리 (CRUD)
 
