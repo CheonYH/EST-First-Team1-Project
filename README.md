@@ -46,7 +46,44 @@
    * UIUX: ipad(가로, 세로 대응), iphone 대응, Light, Dark Mode 대응
 
 ## 📁 프로젝트 구조
+    1. BoxUp/
+├── BoxUpApp.swift                 # 앱 진입점 (SwiftUI App)
+│
+├── Models/                        # 📦 데이터 및 도메인 모델
+│   ├── Memo.swift                 # 메모 데이터 모델 (title, content, date, category 등)
+│   ├── Category.swift             # 카테고리 데이터 모델
+│   └── Statistics.swift           # 통계 분석용 구조체 (기간별 카테고리 사용 횟수)
+│
+├── ViewModels/                    # 🧠 비즈니스 로직 & 데이터 관리
+│   ├── MemoViewModel.swift        # 메모 CRUD, 필터링, 검색 기능
+│   ├── CategoryViewModel.swift    # 카테고리 추가/삭제/관리 기능
+│   └── StatisticsViewModel.swift  # 기간별 통계 데이터 계산 로직
+│
+├── Views/                         # 🎨 SwiftUI 화면 구성
+│   ├── MainView.swift             # 메인 화면 (메모 목록 및 추가 버튼)
+│   ├── MemoDetailView.swift       # 메모 작성/수정 화면
+│   ├── CategoryListView.swift     # 카테고리 목록 화면
+│   ├── StatisticsView.swift       # 카테고리별 통계 시각화 화면 (Charts 사용)
+│   └── Components/                # 재사용 가능한 컴포넌트
+│       ├── CategoryTagView.swift  # 태그 형태의 카테고리 표시
+│       ├── StatChartView.swift    # 일/주/월 단위 통계 차트 컴포넌트
+│       └── EmptyStateView.swift   # 데이터 없을 때 표시화면
+│
+├── Data/                          # 💾 로컬 저장 관련
+│   ├── Persistence.swift           # SwiftData 또는 CoreData 관리
+│   └── SampleData.swift            # 개발용 샘플 데이터
+│
+├── Utils/                         # 🧩 유틸리티 및 공통 함수
+│   ├── DateFormatter+Extension.swift  # 날짜 포맷 확장
+│   ├── Color+Extension.swift          # 다크/라이트 모드 대응 색상 확장
+│   └── Constants.swift                # 상수 정의 (UI spacing, category defaults 등)
+│
+└── Assets/
+    ├── Colors.xcassets               # 앱 컬러셋
+    ├── Icons.xcassets                # 아이콘
+    └── AppIcon.appiconset            # 앱 아이콘
 
+    
 ## 🖥️ 앱 주요 화면
 
 ## 💡 사용방법
@@ -74,6 +111,24 @@ BoxUP은 작은 규모의 프로젝트 였지만,
    * 1일 1회의를 통해 작업 진행상황 파악과 팀원들간의 유기적인 피드백을 통해 협업
    * 1일 1회의록을 통해 현재 진행상황과 해야할일을 서로애게 공유
 
+⚙️ 아키텍처 개요 (MVVM)
+Layer	역할	예시 파일
+Model	메모/카테고리/통계 데이터 정의	Memo.swift, Category.swift
+ViewModel	뷰와 데이터 사이의 로직 관리	MemoViewModel.swift
+View	사용자 인터페이스(UI) 구성	MainView.swift, StatisticsView.swift
+
+
+## 🧩 특징
+
+SwiftData로 데이터 영속화
+
+SwiftUI Charts로 통계 시각화
+
+MVVM 구조로 코드 분리 및 유지보수성 향상
+
+Light/Dark Mode 대응 및 iPad·iPhone 대응
+
+Category 기반 검색 & 필터링 기능 내장
 
 
 ## 🗓️ 개발 기간
