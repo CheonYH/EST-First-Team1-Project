@@ -4,7 +4,7 @@
 
 # 📦 BoxUp
 <p align="center">
-  <img width="403" height="403" alt="star" src="https://github.com/user-attachments/assets/01524aa7-21f3-4a21-8762-6586392d95e4" />
+  <img width="2000" height="1000" alt="BoxUpImage" src="https://github.com/user-attachments/assets/6f99e949-6b04-4112-bdc3-3639941b6bc7" />
 </p>
 <div align="center">
   <h1>BoxUp 박스업</h1>
