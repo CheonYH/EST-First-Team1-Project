@@ -278,23 +278,23 @@ struct BarChart: View {
             
             HStack(alignment: .bottom, spacing: 12) {
                 ForEach(usages) { u in
-                    VStack(spacing: 8) {
-                        // bar
+                    let barHeight = max(8, CGFloat(u.count) / CGFloat(maxVal) * (geo.size.height - 44))
+                    
+                    VStack(spacing: 6) {
+                        // 값 라벨(막대 '위')
+                        Text("\(u.count)")
+                            .font(.caption2.monospacedDigit().weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.95))
+                            .frame(width: barWidth + 8) // 폭 맞춰서 클리핑 방지
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                        
+                        // 막대
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .fill(u.color)
-                            .frame(
-                                width: barWidth,
-                                height: max(8, CGFloat(u.count) / CGFloat(maxVal) * (geo.size.height - 44))
-                            )
-                            .overlay(
-                                Text("\(u.count)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.white.opacity(0.9))
-                                    .padding(.bottom, 2),
-                                alignment: .top
-                            )
+                            .frame(width: barWidth, height: barHeight)
                         
-                        // label
+                        // 하단 라벨
                         Text(u.name)
                             .font(.caption2)
                             .foregroundStyle(.white.opacity(0.8))
@@ -302,7 +302,10 @@ struct BarChart: View {
                             .frame(width: barWidth + 8)
                     }
                     .frame(maxHeight: .infinity, alignment: .bottom)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(u.name), \(u.count)회")
                 }
+
             }
             .frame(maxWidth: .infinity, alignment: .bottomLeading)
         }
