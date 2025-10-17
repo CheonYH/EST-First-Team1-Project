@@ -99,37 +99,49 @@ struct Category: View {
     var body: some View {
         NavigationView {
             ZStack {
-                
                 Color.black.ignoresSafeArea()
 
-                List {
-                    ForEach(cate) { category in
-                        Button {
-                            editingCategory = category
-                        } label: {
-                            HStack(spacing: 12) {
-                                let fgColor = Color.from255(r: category.r, g: category.g, b: category.b)
-                                Image(systemName: category.icon)
-                                    .foregroundColor(fgColor)
-                                    .font(.title2)
-                                    .frame(width: 36, height: 36)
-                                    .background(fgColor.opacity(0.15))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(category.name)
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                }
-                            }
-                            .padding(.vertical, 6)
-                        }
+                if cate.isEmpty {
+                    // ✅ 카테고리가 없을 때 표시
+                    VStack(spacing: 12) {
+                        Image(systemName: "folder.badge.plus")
+                            .font(.system(size: 48))
+                            .foregroundColor(.gray)
+                        Text("카테고리를 추가해 주세요")
+                            .foregroundColor(.gray)
+                            .font(.headline)
                     }
-                    .onDelete(perform: deleteRows)
-                    .listRowBackground(Color.black)
+                    .multilineTextAlignment(.center)
+                } else {
+                    // ✅ 카테고리가 있을 때 기존 리스트 표시
+                    List {
+                        ForEach(cate, id: \.persistentModelID) { category in
+                            Button {
+                                editingCategory = category
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: category.icon)
+                                        .foregroundColor(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a))
+                                        .font(.title2)
+                                        .frame(width: 36, height: 36)
+                                        .background(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a).opacity(0.15))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(category.name)
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                                .padding(.vertical, 6)
+                            }
+                        }
+                        .onDelete(perform: deleteRows)
+                        .listRowBackground(Color.black)
+                    }
+                    .scrollContentBackground(.hidden)
+                    .background(Color.black)
                 }
-                .scrollContentBackground(.hidden)
-                .background(Color.black)
             }
             .navigationTitle("카테고리")
             .navigationBarTitleDisplayMode(.inline)
@@ -272,7 +284,7 @@ struct CategoryEditorView: View {
         .onAppear {
             if let t = target {
                 name = t.name
-                color = Color.from255(r: t.r, g: t.g, b: t.b)
+                color = Color.from255(r: t.r, g: t.g, b: t.b, a: t.a)
                 icon  = t.icon
             }
         }
@@ -333,3 +345,4 @@ struct CategoryListView_Previews: PreviewProvider {
             .modelContainer(for: CategoryModel.self)
     }
 }
+
