@@ -10,6 +10,15 @@ import SwiftData
 
 // MARK: - Range
 
+
+/// # Overview
+/// 통계 조회 기간(최근 24시간/7일/30일)을 표현합니다.
+/// 뷰의 세그먼트 컨트롤과 데이터 쿼리 범위를 동기화할 때 사용합니다.
+///
+/// # Cases
+/// - `day`   : 최근 24시간
+/// - `week`  : 최근 7일
+/// - `month` : 최근 30일
 enum RangeFilter: String, CaseIterable, Identifiable {
     case day = "24h"
     case week = "7d"
@@ -20,6 +29,17 @@ enum RangeFilter: String, CaseIterable, Identifiable {
 
 // MARK: - Aggregated model
 
+
+/// # Overview
+/// 카테고리별 집계 결과(이름/색상/사용횟수)를 바 차트/요약 카드에 공급하기 위한 ViewModel입니다.
+///
+/// # Discussion
+/// `CategoryModel`의 고유 식별자(`UUID`)를 기반으로 합니다.
+/// 일반적인 사용 시에는 모든 Entry가 유효한 카테고리를 가지므로,
+/// `id`에는 해당 카테고리의 UUID 문자열을 사용합니다.
+///
+/// - Note:
+///   카테고리 삭제로 참조가 사라진 항목은 예외적으로 `"unclassified"`가 적용됩니다.
 struct CategoryUsage: Identifiable {
     let id: String
     let name: String               // 카테고리 이름
@@ -28,7 +48,17 @@ struct CategoryUsage: Identifiable {
 }
 
 // MARK: - StatusView (카테고리 사용량 통계)
-
+/// # Overview
+/// 선택된 기간에 대한 **카테고리 사용량 통계**를 보여주는 메인 화면입니다.
+/// 상단(제목/기간 세그먼트/총계 카드) + 하단(바 차트 카드)로 구성됩니다.
+///
+/// # Discussion
+/// - 상단 요소들의 실제 렌더링 높이를 `PreferenceKey(HeightKey)`로 집계하여,
+///   데이터가 없을 때 차트 카드가 **남은 세로 공간을 자연스럽게 채우도록** 만듭니다.
+/// - SwiftData `EntryModel.createdAt`을 기준으로 기간 필터링합니다.
+///
+/// # SeeAlso
+/// `RangeSegmentedControl`, `UsageBarChartCard`, `BarChart`
 struct StatusView: View {
     @Environment(\.modelContext) private var ctx
 
@@ -39,37 +69,74 @@ struct StatusView: View {
     @State private var usages: [CategoryUsage] = []
     @State private var totalCount: Int = 0
     
+    @State private var aboveHeight: CGFloat = 0   // 상단 영역 총 높이
+    
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                
-                Text("카테고리 사용량 통계")
-                    .font(.system(size: 32, weight: .heavy))
-                    .foregroundStyle(.white)
-                    .padding(.top, 8)
-                
-                RangeSegmentedControl(selected: $selectedRange)
-                    .onChange(of: selectedRange) { _ in reload() }
-                    .onAppear { reload() }
-                
-                // 총계 카드
-                TotalsCard(total: totalCount,
-                           periodLabel: periodLabel(for: selectedRange),
-                           categoryCount: usages.filter { $0.count > 0 }.count)
-                
-                // 바 차트 카드
-                UsageBarChartCard(usages: usages,
-                                  subtitle: "\(periodLabel(for: selectedRange)) 동안 카테고리별 사용 횟수")
+        GeometryReader { outer in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    
+                    // ─ 제목
+                    Text("카테고리 사용량 통계")
+                        .font(.system(size: 32, weight: .heavy))
+                        .foregroundStyle(.white)
+                        .padding(.top, 8)
+                        .background(
+                            GeometryReader { Color.clear
+                                    .preference(key: HeightKey.self, value: $0.size.height)
+                            }
+                        )
+                    
+                    // ─ 세그먼트
+                    RangeSegmentedControl(selected: $selectedRange)
+                        .onChange(of: selectedRange) { _ in reload() }
+                        .onAppear { reload() }
+                        .background(
+                            GeometryReader { Color.clear
+                                    .preference(key: HeightKey.self, value: $0.size.height)
+                            }
+                        )
+                    
+                    // ─ 총계 카드
+                    TotalsCard(total: totalCount,
+                               periodLabel: periodLabel(for: selectedRange),
+                               categoryCount: usages.filter { $0.count > 0 }.count)
+                    .background(
+                        GeometryReader { Color.clear
+                                .preference(key: HeightKey.self, value: $0.size.height)
+                        }
+                    )
+                    
+                    // ─ 바 차트 카드
+                    UsageBarChartCard(
+                        usages: usages,
+                        subtitle: "\(periodLabel(for: selectedRange)) 동안 카테고리별 사용 횟수",
+                        // ✅ ‘남은 공간’ = 화면높이 - 상단총높이 - 바깥 패딩(대략)
+                        minHeightOverride: usages.isEmpty
+                        ? max(220, outer.size.height - aboveHeight - 20 /*bottom padding*/)
+                        : nil
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 32)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 32)
+            .background(Color(red: 53/255, green: 53/255, blue: 53/255))
+            // ⬇️ 상단 요소들의 높이 합계 수신
+            .onPreferenceChange(HeightKey.self) { aboveHeight = $0 }
         }
-        .background(Color(red: 53/255, green: 53/255, blue: 53/255))
-        .background(Color(.systemBackground))
     }
+
     
     // MARK: - Data loading
     
+    /// # Overview
+    /// 선택된 기간(`selectedRange`)에 맞춰 `EntryModel`을 페치하고,
+    /// 카테고리별로 그룹핑/정렬해 `usages`와 `totalCount`를 갱신합니다.
+    ///
+    /// # Discussion
+    /// - `e.category == nil`인 항목은 `"미분류"` 키로 묶습니다.
+    /// - 색상은 `CategoryModel`의 RGBA(0~255)를 `Color.from255`로 변환합니다.
+    /// - 페치 실패 시 안전한 초기값으로 되돌리고 `assertionFailure`를 호출합니다.
     private func reload() {
         let interval = dateInterval(for: selectedRange)
         do {
@@ -118,6 +185,9 @@ struct StatusView: View {
         }
     }
     
+    /// # Overview
+    /// `RangeFilter`에 따른 [start, now) 구간을 생성합니다.
+    /// - Returns: `DateInterval(start: past, end: now)`
     private func dateInterval(for range: RangeFilter) -> DateInterval {
         let now = Date()
         let start: Date
@@ -132,6 +202,9 @@ struct StatusView: View {
         return DateInterval(start: start, end: now)
     }
     
+    /// # Overview
+    /// UI 표기를 위한 사람 친화적 기간 라벨을 반환합니다.
+    /// - Example: `.day → "최근 24시간"`
     private func periodLabel(for range: RangeFilter) -> String {
         switch range {
             case .day: return "최근 24시간"
@@ -141,8 +214,13 @@ struct StatusView: View {
     }
 }
 
-// MARK: - Segmented Control (그대로 사용)
-
+// MARK: - Segmented Control
+/// # Overview
+/// `RangeFilter`를 선택하는 세그먼트 컨트롤입니다.
+/// 선택 변경 시 상위의 `selected` 바인딩을 애니메이션과 함께 갱신합니다.
+///
+/// # Accessibility
+/// 버튼 라벨은 실제 값("24h", "7d", "30d")을 노출합니다.
 struct RangeSegmentedControl: View {
     @Binding var selected: RangeFilter
     
@@ -178,6 +256,13 @@ struct RangeSegmentedControl: View {
 
 // MARK: - Cards
 
+/// # Overview
+/// 라이트/다크 모드에 맞춘 공용 카드 컨테이너입니다.
+/// 적당한 그림자, 얇은 스트로크, 큰 코너 반경(28pt)을 적용합니다.
+///
+/// # Discussion
+/// - 라이트 모드에선 밝기 과다를 줄이기 위해 `systemGray6` 톤을 사용합니다.
+/// - 다크 모드에서는 기존 대비/그림자를 유지합니다.
 struct Card<Content: View>: View {
     @Environment(\.colorScheme) private var scheme
     @ViewBuilder var content: Content
@@ -213,6 +298,9 @@ struct Card<Content: View>: View {
     }
 }
 
+
+/// # Overview
+/// 현재 조회기간의 총 사용횟수, 기간 라벨, 사용된 카테고리 수를 요약합니다.
 struct TotalsCard: View {
     let total: Int
     let periodLabel: String
@@ -234,6 +322,9 @@ struct TotalsCard: View {
     }
 }
 
+/// # Overview
+/// 작은 제목 + 굵은 값으로 구성된 요약 배지입니다.
+/// 라벨 줄바꿈을 방지하기 위해 `.lineLimit(1)`과 `.minimumScaleFactor(0.7)`를 사용합니다.
 struct SummaryPill: View {
     let title: String
     let value: String
@@ -260,9 +351,29 @@ struct SummaryPill: View {
     }
 }
 
+/// # Overview
+/// 자식 뷰들의 높이를 상위로 누적 전달하는 `PreferenceKey`입니다.
+/// 상단 영역 총합을 구해 **빈 상태 레이아웃의 가변 높이**를 계산하는 데 사용합니다.
+///
+/// - Note: `reduce`에서 `+=`로 누적합니다.
+private struct HeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value += nextValue() }
+}
+
+
+/// # Overview
+/// 바 차트와 서브타이틀을 담는 카드입니다.
+/// 데이터가 없을 경우, `minHeightOverride`를 활용해 **남은 화면 높이**를 채우는 빈 상태 안내를 보여줍니다.
+///
+/// # Parameters
+/// - usages: 집계된 카테고리 사용량
+/// - subtitle: 기간이 반영된 설명 라벨
+/// - minHeightOverride: 빈 상태일 때 강제로 확보할 최소 높이 (없으면 220pt)
 struct UsageBarChartCard: View {
     let usages: [CategoryUsage]
     let subtitle: String
+    var minHeightOverride: CGFloat? = nil   // ← 추가
     
     var body: some View {
         Card {
@@ -276,9 +387,20 @@ struct UsageBarChartCard: View {
                     .foregroundStyle(.secondary)
                 
                 if usages.isEmpty {
-                    Text("표시할 데이터가 없습니다.")
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 12)
+                    // ⬇️ 남은 공간 채우기
+                    VStack(spacing: 10) {
+                        Image(systemName: "chart.bar.doc.horizontal")
+                            .font(.system(size: 32, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                        Text("표시할 데이터가 없습니다.")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        Text("카테고리를 선택하거나 새로운 회고를 추가해 보세요.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: (minHeightOverride ?? 220))  // 👈 여기!
                 } else {
                     BarChart(usages: usages)
                         .frame(height: 220)
@@ -289,8 +411,61 @@ struct UsageBarChartCard: View {
     }
 }
 
+
+/// # Overview
+/// 화면 폭/SizeClass/DynamicType을 고려해 빈 상태/차트의 **권장 높이**를 계산합니다.
+/// 분할뷰(iPad), 초대형 화면, 접근성 글자 크기에서 균형을 맞춥니다.
+///
+/// # Parameters
+/// - w: 사용 가능한 가로 폭
+/// - hSize/vSize: 수평/수직 SizeClass
+/// - dtSize: Dynamic Type 크기
+///
+/// # Returns
+/// - empty: 빈 상태 권장 높이
+/// - chart: 차트 권장 높이
+private func responsiveHeights(
+    width w: CGFloat,
+    hSize: UserInterfaceSizeClass?,
+    vSize: UserInterfaceSizeClass?,
+    dtSize: DynamicTypeSize
+) -> (empty: CGFloat, chart: CGFloat) {
+    
+    // iPad 느낌: 가로/세로 둘 다 regular 이거나, 폭이 충분히 넓을 때
+    let isRegularLike = (hSize == .regular && vSize == .regular) || w >= 820
+    
+    // 기본 비율(폭 기준)
+    var emptyRatio: CGFloat = isRegularLike ? 0.38 : 0.30
+    var chartRatio: CGFloat = isRegularLike ? 0.46 : 0.40
+    
+    // 폭 버킷으로 미세 조정 (분할뷰/초대형 화면 대응)
+    if w < 700 { emptyRatio *= 0.9;  chartRatio *= 0.9  }
+    if w > 1000 { emptyRatio *= 1.1; chartRatio *= 1.08 }
+    
+    // Dynamic Type가 큰 경우 살짝 키움
+    if dtSize >= .accessibility1 { emptyRatio *= 1.08; chartRatio *= 1.06 }
+    
+    // 최종: 폭 * 비율, 안전 클램프
+    let empty = max(160, min(520, w * emptyRatio))
+    let chart = max(220, min(600, w * chartRatio))
+    
+    return (empty, chart)
+}
+
+
 // MARK: - Simple Bar Chart
 
+/// # Overview
+/// 매우 가벼운 커스텀 바 차트입니다. `GeometryReader` 기반으로 막대 폭/높이를 계산하고,
+/// 상단 값 라벨과 하단 카테고리 라벨을 함께 렌더링합니다.
+///
+/// # Discussion
+/// - 막대 폭은 가로 여백(12pt 간격)을 고려하여 자동 산출합니다.
+/// - 막대 최소 높이 8pt, 값 라벨은 `.monospacedDigit()`로 정렬감을 확보합니다.
+/// - `accessibilityLabel`을 통해 스크린리더가 "`이름, N회`"로 읽습니다.
+///
+/// - Important:
+///   대규모 데이터에서는 `usages.count`에 따라 성능 고려가 필요합니다(예: 가상화/페이지네이션).
 struct BarChart: View {
     let usages: [CategoryUsage]
     
