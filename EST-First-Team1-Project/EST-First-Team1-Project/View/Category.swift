@@ -99,7 +99,7 @@ struct Category: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color("backgroundColor").ignoresSafeArea()
+                Color(red: 53/255, green: 53/255, blue: 53/255).ignoresSafeArea()
 
                 if cate.isEmpty {
                     VStack(spacing: 12) {
