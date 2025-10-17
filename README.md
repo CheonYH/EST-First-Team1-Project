@@ -46,43 +46,37 @@
    * UIUX: ipad(가로, 세로 대응), iphone 대응, Light, Dark Mode 대응
 
 ## 📁 프로젝트 구조
-    1. BoxUp/
-    ├── BoxUpApp.swift                 # 앱 진입점 (SwiftUI App)
-    │
-    ├── Models/                        # 📦 데이터 및 도메인 모델
-    │   ├── Memo.swift                 # 메모 데이터 모델 (title, content, date, category 등)
-    │   ├── Category.swift             # 카테고리 데이터 모델
-    │   └── Statistics.swift           # 통계 분석용 구조체 (기간별 카테고리 사용 횟수)
-    │
-    ├── ViewModels/                    # 🧠 비즈니스 로직 & 데이터 관리
-    │   ├── MemoViewModel.swift        # 메모 CRUD, 필터링, 검색 기능
-    │   ├── CategoryViewModel.swift    # 카테고리 추가/삭제/관리 기능
-    │   └── StatisticsViewModel.swift  # 기간별 통계 데이터 계산 로직
-    │
-    ├── Views/                         # 🎨 SwiftUI 화면 구성
-    │   ├── MainView.swift             # 메인 화면 (메모 목록 및 추가 버튼)
-    │   ├── MemoDetailView.swift       # 메모 작성/수정 화면
-    │   ├── CategoryListView.swift     # 카테고리 목록 화면
-    │   ├── StatisticsView.swift       # 카테고리별 통계 시각화 화면 (Charts 사용)
-    │   └── Components/                # 재사용 가능한 컴포넌트
-    │       ├── CategoryTagView.swift  # 태그 형태의 카테고리 표시
-    │       ├── StatChartView.swift    # 일/주/월 단위 통계 차트 컴포넌트
-    │       └── EmptyStateView.swift   # 데이터 없을 때 표시화면
-    │
-    ├── Data/                          # 💾 로컬 저장 관련
-    │   ├── Persistence.swift           # SwiftData 또는 CoreData 관리
-    │   └── SampleData.swift            # 개발용 샘플 데이터
-    │
-    ├── Utils/                         # 🧩 유틸리티 및 공통 함수
-    │   ├── DateFormatter+Extension.swift  # 날짜 포맷 확장
-    │   ├── Color+Extension.swift          # 다크/라이트 모드 대응 색상 확장
-    │   └── Constants.swift                # 상수 정의 (UI spacing, category defaults 등)
-    │
-    └── Assets/
-    ├── Colors.xcassets               # 앱 컬러셋
-    ├── Icons.xcassets                # 아이콘
-    └── AppIcon.appiconset            # 앱 아이콘
+EST-First-Team1-Project.swift (앱진입점)
 
+    /1. Data (데이터 계층)
+
+    데이터의 생성, 읽기, 수정, 삭제 (CRUD) 기능을 담당하는 레이어입니다.
+
+CategoryCRUD.swift — 카테고리 관련 데이터 처리 (CRUD)
+
+EntryCRUD.swift — 엔트리(게시글, 기록 등) 관련 데이터 처리 (CRUD)
+
+2. Model (모델 계층)
+
+앱의 데이터 구조와 로직을 정의하는 모델 계층입니다.
+
+CategoryModel.swift — 카테고리 데이터 구조 정의
+
+EntryModel.swift — 엔트리(기록/메모 등) 데이터 구조 정의
+
+3. View (뷰 계층)
+
+SwiftUI로 작성된 UI 화면들을 모아둔 레이어입니다.
+
+Category.swift — 카테고리 관련 화면
+
+IntroView.swift — 앱 인트로(시작) 화면
+
+MainPage.swift — 메인 페이지 (앱의 핵심 UI)
+
+StatusView.swift — 상태(예: 진행 현황) 표시 화면
+
+TextField.swift — 텍스트 입력 관련 커스텀 UI 컴포넌트
     
 ## 🖥️ 앱 주요 화면
 
