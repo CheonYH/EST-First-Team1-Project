@@ -59,14 +59,25 @@ struct MainPage: View {
     }
     
     // 검색 필터 (제목/본문)
-    // 수정: 카테고리 기반 필터링은 모델 타입 불일치로 인한 컴파일 에러를 유발할 수 있어 제거하고,
-    //      텍스트 검색만 적용합니다. (모델/데이터 파일은 수정 금지 조건)
-    private var filtered: [EntryModel] { // 수정됨
-        let base = entries
-        guard !searchText.isEmpty else { return base }
-        return base.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText) ||
-            $0.content.localizedCaseInsensitiveContains(searchText)
+    // EntryModel에는 `content`가 없고 `attributedContent`가 있습니다.
+    // 단계적으로 나눠 타입체커 부담을 줄이고, 선택 카테고리와 텍스트 검색을 순차 적용합니다.
+    private var filtered: [EntryModel] {
+        var base = entries
+        
+        // 1) 카테고리 필터 (선택된 경우에만)
+        if let current = selectedCategory {
+            base = base.filter { $0.category?.id == current.id }
+        }
+        
+        // 2) 텍스트 검색 (비어있지 않은 경우에만)
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return base }
+        
+        let needle = trimmed.lowercased()
+        return base.filter { e in
+            let title = e.title.lowercased()
+            let body = String(e.attributedContent.characters).lowercased()
+            return title.contains(needle) || body.contains(needle)
         }
     }
     // 바디
@@ -158,45 +169,26 @@ struct MainPage: View {
                         } else {
                             ForEach(filtered, id: \.persistentModelID) { e in
                                 ZStack {
+                                    // 수정 모드로 바로 진입: ContentView(editTarget:)로 네비게이션
                                     NavigationLink {
-                                        VStack(alignment: .leading, spacing: 12) {
-                                            Text(e.title).font(.title2).bold()
-                                                .foregroundStyle(primaryText)
-                                            Text(e.createdAt, style: .date)
-                                                .font(.caption)
-                                                .foregroundStyle(secondaryText)
-                                            Divider()
-                                            ScrollView {
-                                                Text(e.content)
-                                                    .foregroundStyle(primaryText)
-                                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                            }
-                                        }
-                                        .padding()
-                                        .navigationTitle("Entry")
-                                        .navigationBarTitleDisplayMode(.inline)
-                                        .background(
-                                            // Keep background adaptive
-                                            (scheme == .dark ? Color.black : Color.white)
-                                                .ignoresSafeArea()
-                                        )
+                                        ContentView(editTarget: e)
+                                            .navigationBarTitleDisplayMode(.inline)
                                     } label: {
                                         VStack(alignment: .leading, spacing: 8) {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 Text(e.title.isEmpty ? "제목 없음" : e.title)
                                                     .font(.headline)
                                                     .foregroundStyle(inverseOnCard)
-                                                if !e.content.isEmpty {
-                                                    Text(e.content)
+                                                
+                                                let plain = String(e.attributedContent.characters)
+                                                if !plain.isEmpty {
+                                                    Text(plain)
                                                         .font(.subheadline)
                                                         .foregroundStyle(inverseOnCard.opacity(0.8))
                                                         .lineLimit(2)
                                                 }
                                             }
                                             HStack {
-                                                // 수정: 관계 타입 불일치에 따른 컴파일 에러를 방지하기 위해
-                                                //       카테고리 이름 접근 대신 고정 라벨 유지
-                                                
                                                 if let cat = e.category {
                                                     let fg = Color.from255(r: cat.r, g: cat.g, b: cat.b)
                                                     
@@ -217,7 +209,7 @@ struct MainPage: View {
                                                 }
                                                 
                                                 else {
-                                                    Text("Uncategorized") // 수정됨
+                                                    Text("Uncategorized")
                                                         .font(.caption)
                                                         .foregroundStyle(inverseOnCard.opacity(0.8))
                                                 }
@@ -394,3 +386,4 @@ private struct ConditionalSearchModifier: ViewModifier {
     MainPage()
         .modelContainer(for: [EntryModel.self, CategoryModel.self], inMemory: true)
 }
+

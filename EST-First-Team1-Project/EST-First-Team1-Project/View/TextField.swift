@@ -24,16 +24,74 @@ final class Note {
     }
 }
 
+
+
 // MARK: - ContentView
 struct ContentView: View {
+    
+    
     @Environment(\.modelContext) private var context
     @Environment(\.colorScheme) private var scheme
-
+    @Environment(\.dismiss) private var dismiss
+    
     @State private var selectedCategoryName: String? = nil
-    private let categories = ["여행", "메모", "할 일", "운동"]
-
+    @Query(sort: [SortDescriptor(\CategoryModel.name, order: .forward)])
+    private var categories: [CategoryModel]
+    
     @State private var showSaveAlert = false
     @State private var alertMessage = ""
+    
+    let editTarget: EntryModel?
+    
+    init(editTarget: EntryModel? = nil) {
+        self.editTarget = editTarget
+    }
+    
+    
+    // MARK: - 저장 로직
+    private func handleSave(title: String, body: AttributedString, date: Date) {
+        guard let categoryName = selectedCategoryName, !categoryName.isEmpty else {
+            alertMessage = "카테고리를 선택하세요."
+            showSaveAlert = true
+            return
+        }
+        guard let categoryModel = categories.first(where: { $0.name == categoryName }) else {
+            alertMessage = "선택한 카테고리를 찾을 수 없어요."
+            showSaveAlert = true
+            return
+        }
+        guard !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            alertMessage = "Title을 입력하세요."
+            showSaveAlert = true
+            return
+        }
+        
+        do {
+            if let target = editTarget {
+                // 수정 모드: 카테고리 및 서식 포함 본문 업데이트
+                target.category = categoryModel
+                try EntryCRUD.update(
+                    context: context,
+                    target,
+                    editTitle: title,
+                    editBody: body
+                )
+            } else {
+                // 생성 모드: 서식 포함 본문과 카테고리 함께 저장
+                try EntryCRUD.create(
+                    context: context,
+                    title: title,
+                    createdAt: date,
+                    body: body,
+                    category: categoryModel
+                )
+            }
+            dismiss()
+        } catch {
+            alertMessage = "저장 중 오류가 발생했어요. 다시 시도해 주세요."
+            showSaveAlert = true
+        }
+    }
 
     // MARK: - MainPage 색상 팔레트
     private var appBackground: Color {
@@ -45,7 +103,7 @@ struct ContentView: View {
         scheme == .dark ? Color.black.opacity(0.05) : Color.white
     }
     private var textBackground: Color {
-        scheme == .dark ? Color.white/*.opacity(0.95)*/ : Color.white/*.opacity(0.95)*/
+        scheme == .dark ? Color.white : Color.white
     }
     private var dateBackground: Color {
         scheme == .dark
@@ -58,16 +116,21 @@ struct ContentView: View {
         : appBackground
     }
     private var primaryText: Color {
-        scheme == .dark ? .black : .black
+        .black
     }
     private var secondaryText: Color {
-        scheme == .dark ? Color.black.opacity(0.6) : Color.black.opacity(0.6)
+        Color.black.opacity(0.6)
     }
     private var inverseOnCard: Color {
-        scheme == .dark ? .white : .white
+        .white
     }
 
     var body: some View {
+        // 편집 모드일 때 초기값 준비
+        let initialTitle: String = editTarget?.title ?? ""
+        let initialBody: AttributedString = editTarget?.attributedContent ?? ""
+        let initialDate: Date = editTarget?.createdAt ?? .now
+
         NavigationView {
             ZStack {
                 appBackground.ignoresSafeArea()
@@ -83,13 +146,13 @@ struct ContentView: View {
                         HStack {
                             Menu {
                                 Button("전체") { selectedCategoryName = nil }
-                                ForEach(categories, id: \.self) { name in
+                                ForEach(categories, id: \.self) { cate in
                                     Button {
-                                        selectedCategoryName = (selectedCategoryName == name) ? nil : name
+                                        selectedCategoryName = (selectedCategoryName == cate.name) ? nil : cate.name
                                     } label: {
                                         HStack {
-                                            Text(name)
-                                            if selectedCategoryName == name {
+                                            Text(cate.name)
+                                            if selectedCategoryName == cate.name {
                                                 Spacer()
                                                 Image(systemName: "checkmark")
                                             }
@@ -114,11 +177,14 @@ struct ContentView: View {
                         .padding(.bottom, 8)
                     }
                     .background(appBackground)
-                    .padding(10) // 카테고리 타이틀-Date메뉴 사이 패딩
+                    .padding(10)
 
                     // MARK: 본문 영역
                     DateHeaderAndEditor(
-                        dateString: "2025.10.14", // 시그니처 유지용(표시는 DatePicker가 담당)
+                        initialTitle: initialTitle,
+                        initialBody: initialBody,
+                        initialDate: initialDate,
+                        dateString: "2025.10.14",
                         colors: EditorColors(
                             appBackground: appBackground,
                             listBackground: listBackground,
@@ -135,34 +201,17 @@ struct ContentView: View {
                     )
                 }
             }
+            .onAppear {
+                // 편집 모드면 카테고리 초기 선택값 채우기
+                if let c = editTarget?.category?.name {
+                    selectedCategoryName = c
+                }
+            }
             .alert("저장할 수 없어요", isPresented: $showSaveAlert) {
                 Button("확인", role: .cancel) { }
             } message: {
                 Text(alertMessage)
             }
-        }
-    }
-
-    // MARK: - 저장 로직
-    private func handleSave(title: String, body: AttributedString, date: Date) {
-        guard let category = selectedCategoryName, !category.isEmpty else {
-            alertMessage = "카테고리를 선택하세요."
-            showSaveAlert = true
-            return
-        }
-        guard !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            alertMessage = "Title을 입력하세요."
-            showSaveAlert = true
-            return
-        }
-
-        let note = Note(title: title, category: category, body: body, createdAt: date)
-        context.insert(note)
-        do {
-            try context.save()
-        } catch {
-            alertMessage = "저장 중 오류가 발생했어요. 다시 시도해 주세요."
-            showSaveAlert = true
         }
     }
 }
@@ -181,6 +230,11 @@ struct EditorColors {
 
 // MARK: - DateHeaderAndEditor
 struct DateHeaderAndEditor: View {
+    // 초기 주입 값들 (수정 모드일 때 사용)
+    let initialTitle: String
+    let initialBody: AttributedString
+    let initialDate: Date
+
     let dateString: String
     let colors: EditorColors
 
@@ -188,12 +242,12 @@ struct DateHeaderAndEditor: View {
     @State private var textSelection = AttributedTextSelection()
     @State private var title: String = ""
     @State private var date: Date = .now
+    @State private var didPrefill = false
 
     var onSave: (_ title: String, _ body: AttributedString, _ date: Date) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            // 날짜 헤더 & DatePicker(기본 today)
             ZStack {
                 Rectangle()
                     .fill(colors.dateBackground)
@@ -211,7 +265,6 @@ struct DateHeaderAndEditor: View {
             }
             .frame(height: 40)
 
-            // Title Field (커스텀 플레이스홀더)
             ZStack(alignment: .topLeading) {
                 colors.textBackground
                     .frame(height: 50)
@@ -233,7 +286,6 @@ struct DateHeaderAndEditor: View {
                 .frame(height: 1)
                 .background(colors.secondaryText.opacity(0.3))
 
-            // Rich Text Editor (커스텀 플레이스홀더 동일 색상)
             ZStack(alignment: .topLeading) {
                 colors.textBackground
 
@@ -250,10 +302,19 @@ struct DateHeaderAndEditor: View {
                     textColor: colors.primaryText
                 )
                 .font(.system(size: 17))
-                .padding(.top, 15 - 8)
-                .padding(.horizontal, 15 - 5)
+                .padding(.top, 7)
+                .padding(.horizontal, 10)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
+            }
+        }
+        .onAppear {
+            // 최초 1회만 편집 초기값을 채워줌
+            if !didPrefill {
+                title = initialTitle
+                attributedText = initialBody
+                date = initialDate
+                didPrefill = true
             }
         }
         .mask(RoundedRectangle(cornerRadius: 0, style: .continuous))
@@ -276,7 +337,6 @@ private struct BottomSafeAreaBackground: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .ignoresSafeArea()
         }
-
         .frame(height: 0)
     }
 }
