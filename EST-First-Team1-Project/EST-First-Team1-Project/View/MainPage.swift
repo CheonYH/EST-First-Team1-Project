@@ -31,7 +31,8 @@ struct MainPage: View {
     @State private var navigateToCategory: Bool = false
     // 텍스트 에디터(텍스트필드 페이지) 네비게이션 트리거
     @State private var navigateToTextEditor: Bool = false
-    
+    // 통계 화면 네비게이션 트리거
+    @State private var navigateToStatusView: Bool = false
     // 다크/라이트 대응 색상
     private var appBackground: Color {
         scheme == .dark
@@ -84,6 +85,15 @@ struct MainPage: View {
                 // 숨겨진 네비게이션 링크: 상태로 텍스트 에디터(ContentView) 화면으로 푸시
                 NavigationLink(isActive: $navigateToTextEditor) {
                     ContentView()
+                        .navigationBarTitleDisplayMode(.inline)
+                } label: {
+                    EmptyView()
+                }
+                .hidden()
+                
+                
+                NavigationLink(isActive: $navigateToStatusView) {
+                    StatusView()
                         .navigationBarTitleDisplayMode(.inline)
                 } label: {
                     EmptyView()
@@ -262,7 +272,7 @@ struct MainPage: View {
                             navigateToTextEditor = true
                         }
                         Button("통계", systemImage: "chart.bar") {
-                            statusMessage = "통계 선택됨"
+                            navigateToStatusView = true
                         }
                         Button("카테고리 생성", systemImage: "rectangle.stack.badge.plus") {
                             // Category 화면으로 네비게이션
