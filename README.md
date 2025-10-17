@@ -46,6 +46,7 @@
    * UIUX: ipad(가로, 세로 대응), iphone 대응, Light, Dark Mode 대응
 
 ## 📁 프로젝트 구조
+EST-First-Team1-Project.swift (앱진입점)
 
 1. Data (데이터 계층)
 
