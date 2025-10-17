@@ -4,7 +4,7 @@
 
 # 📦 BoxUp
 <p align="center">
-  <img width="403" height="403" alt="star" src="https://github.com/user-attachments/assets/01524aa7-21f3-4a21-8762-6586392d95e4" />
+  <img width="2000" height="1000" alt="BoxUpImage" src="https://github.com/user-attachments/assets/6f99e949-6b04-4112-bdc3-3639941b6bc7" />
 </p>
 <div align="center">
   <h1>BoxUp 박스업</h1>
@@ -47,38 +47,38 @@
 
 ## 📁 프로젝트 구조
     1. BoxUp/
-├── BoxUpApp.swift                 # 앱 진입점 (SwiftUI App)
-│
-├── Models/                        # 📦 데이터 및 도메인 모델
-│   ├── Memo.swift                 # 메모 데이터 모델 (title, content, date, category 등)
-│   ├── Category.swift             # 카테고리 데이터 모델
-│   └── Statistics.swift           # 통계 분석용 구조체 (기간별 카테고리 사용 횟수)
-│
-├── ViewModels/                    # 🧠 비즈니스 로직 & 데이터 관리
-│   ├── MemoViewModel.swift        # 메모 CRUD, 필터링, 검색 기능
-│   ├── CategoryViewModel.swift    # 카테고리 추가/삭제/관리 기능
-│   └── StatisticsViewModel.swift  # 기간별 통계 데이터 계산 로직
-│
-├── Views/                         # 🎨 SwiftUI 화면 구성
-│   ├── MainView.swift             # 메인 화면 (메모 목록 및 추가 버튼)
-│   ├── MemoDetailView.swift       # 메모 작성/수정 화면
-│   ├── CategoryListView.swift     # 카테고리 목록 화면
-│   ├── StatisticsView.swift       # 카테고리별 통계 시각화 화면 (Charts 사용)
-│   └── Components/                # 재사용 가능한 컴포넌트
-│       ├── CategoryTagView.swift  # 태그 형태의 카테고리 표시
-│       ├── StatChartView.swift    # 일/주/월 단위 통계 차트 컴포넌트
-│       └── EmptyStateView.swift   # 데이터 없을 때 표시화면
-│
-├── Data/                          # 💾 로컬 저장 관련
-│   ├── Persistence.swift           # SwiftData 또는 CoreData 관리
-│   └── SampleData.swift            # 개발용 샘플 데이터
-│
-├── Utils/                         # 🧩 유틸리티 및 공통 함수
-│   ├── DateFormatter+Extension.swift  # 날짜 포맷 확장
-│   ├── Color+Extension.swift          # 다크/라이트 모드 대응 색상 확장
-│   └── Constants.swift                # 상수 정의 (UI spacing, category defaults 등)
-│
-└── Assets/
+    ├── BoxUpApp.swift                 # 앱 진입점 (SwiftUI App)
+    │
+    ├── Models/                        # 📦 데이터 및 도메인 모델
+    │   ├── Memo.swift                 # 메모 데이터 모델 (title, content, date, category 등)
+    │   ├── Category.swift             # 카테고리 데이터 모델
+    │   └── Statistics.swift           # 통계 분석용 구조체 (기간별 카테고리 사용 횟수)
+    │
+    ├── ViewModels/                    # 🧠 비즈니스 로직 & 데이터 관리
+    │   ├── MemoViewModel.swift        # 메모 CRUD, 필터링, 검색 기능
+    │   ├── CategoryViewModel.swift    # 카테고리 추가/삭제/관리 기능
+    │   └── StatisticsViewModel.swift  # 기간별 통계 데이터 계산 로직
+    │
+    ├── Views/                         # 🎨 SwiftUI 화면 구성
+    │   ├── MainView.swift             # 메인 화면 (메모 목록 및 추가 버튼)
+    │   ├── MemoDetailView.swift       # 메모 작성/수정 화면
+    │   ├── CategoryListView.swift     # 카테고리 목록 화면
+    │   ├── StatisticsView.swift       # 카테고리별 통계 시각화 화면 (Charts 사용)
+    │   └── Components/                # 재사용 가능한 컴포넌트
+    │       ├── CategoryTagView.swift  # 태그 형태의 카테고리 표시
+    │       ├── StatChartView.swift    # 일/주/월 단위 통계 차트 컴포넌트
+    │       └── EmptyStateView.swift   # 데이터 없을 때 표시화면
+    │
+    ├── Data/                          # 💾 로컬 저장 관련
+    │   ├── Persistence.swift           # SwiftData 또는 CoreData 관리
+    │   └── SampleData.swift            # 개발용 샘플 데이터
+    │
+    ├── Utils/                         # 🧩 유틸리티 및 공통 함수
+    │   ├── DateFormatter+Extension.swift  # 날짜 포맷 확장
+    │   ├── Color+Extension.swift          # 다크/라이트 모드 대응 색상 확장
+    │   └── Constants.swift                # 상수 정의 (UI spacing, category defaults 등)
+    │
+    └── Assets/
     ├── Colors.xcassets               # 앱 컬러셋
     ├── Icons.xcassets                # 아이콘
     └── AppIcon.appiconset            # 앱 아이콘
