@@ -44,6 +44,8 @@
    * 데이터관리: swiftData
    * 라이브러리: SwiftUI Charts
    * UIUX: ipad(가로, 세로 대응), iphone 대응, Light, Dark Mode 대응
+  
+
 
 
 ## 🗓️ 개발 기간
