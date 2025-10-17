@@ -27,6 +27,7 @@ final class Note {
 // MARK: - ContentView
 struct ContentView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.colorScheme) private var scheme
 
     @State private var selectedCategoryName: String? = nil
     private let categories = ["여행", "메모", "할 일", "운동"]
@@ -34,58 +35,110 @@ struct ContentView: View {
     @State private var showSaveAlert = false
     @State private var alertMessage = ""
 
+    // MARK: - MainPage 색상과 동일한 팔레트(네가 준 값 반영)
+    private var appBackground: Color {
+        scheme == .dark
+        ? Color(red: 28/255, green: 28/255, blue: 30/255)
+        : Color(red: 53/255, green: 53/255, blue: 53/255)
+    }
+    private var listBackground: Color {
+        scheme == .dark ? Color.black.opacity(0.05) : Color.white
+    }
+    private var textBackground: Color {
+        scheme == .dark ? Color.white.opacity(0.95) : Color.white.opacity(0.95)
+    }
+    private var dateBackground: Color {
+        scheme == .dark ? Color.white.opacity(0.55) : Color.white.opacity(0.55)
+    }
+    private var cardBackground: Color {
+        scheme == .dark
+        ? Color(red: 44/255, green: 44/255, blue: 46/255)
+        : appBackground
+    }
+    private var primaryText: Color {
+        scheme == .dark ? .black : .black
+    }
+    private var secondaryText: Color {
+        scheme == .dark ? Color.black.opacity(0.6) : Color.black.opacity(0.6)
+    }
+    private var inverseOnCard: Color {
+        scheme == .dark ? .white : .white
+    }
+
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // 상단 타이틀 + 드롭다운 버튼
-                HStack {
-                    Menu {
-                        Button("전체") { selectedCategoryName = nil }
+            ZStack {
+                // 상단 전체 배경 (SafeArea 포함)
+                appBackground.ignoresSafeArea()
 
-                        ForEach(categories, id: \.self) { name in
-                            Button {
-                                selectedCategoryName = (selectedCategoryName == name) ? nil : name
-                            } label: {
-                                HStack {
-                                    Text(name)
-                                    if selectedCategoryName == name {
-                                        Spacer()
-                                        Image(systemName: "checkmark")
+                VStack(spacing: 0) {
+                    // MARK: 상단 헤더
+                    VStack(spacing: 12) {
+                        HStack {
+                            Menu {
+                                Button("전체") { selectedCategoryName = nil }
+                                ForEach(categories, id: \.self) { name in
+                                    Button {
+                                        selectedCategoryName = (selectedCategoryName == name) ? nil : name
+                                    } label: {
+                                        HStack {
+                                            Text(name)
+                                            if selectedCategoryName == name {
+                                                Spacer()
+                                                Image(systemName: "checkmark")
+                                            }
+                                        }
                                     }
                                 }
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Text(selectedCategoryName ?? "카테고리 선택")
+                                        .font(.title).bold()
+                                    Image(systemName: "chevron.down")
+                                        .font(.system(size: 20, weight: .semibold))
+                                        .offset(y: 2)
+                                }
+                                .foregroundStyle(.white)
+                                .contentShape(Rectangle())
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text(selectedCategoryName ?? "카테고리를 선택하세요")
-                                .font(.title)
-                                .bold()
-                            Image(systemName: "chevron.down")
-                                .font(.system(size: 20, weight: .semibold))
-                                .offset(y: 2)
-                        }
-                        .foregroundStyle(.black)
-                        .contentShape(Rectangle()) // 터치 영역 향상
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        .padding(.bottom, 8)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
+                    .background(appBackground)
 
-                // 본문
-                DateHeaderAndEditor(
-                    dateString: "2025.10.14",
-                    onSave: { title, body in
-                        handleSave(title: title, body: body)
-                    }
-                )
+                    // MARK: 본문 영역
+                    DateHeaderAndEditor(
+                        dateString: "2025.10.14",
+                        colors: EditorColors(
+                            appBackground: appBackground,
+                            listBackground: listBackground,
+                            textBackground: textBackground,
+                            dateBackground: dateBackground,
+                            cardBackground: cardBackground,
+                            primaryText: primaryText,
+                            secondaryText: secondaryText,
+                            inverseOnCard: inverseOnCard
+                        ),
+                        onSave: { title, body in
+                            handleSave(title: title, body: body)
+                        }
+                    )
+                }
             }
-            .padding(.top, 60) // 상단 안전영역과 간격
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     Button { } label: {
                         Label("dismiss", systemImage: "chevron.left")
+                            .foregroundStyle(.white)
                     }
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("메모")
+                        .font(.headline).fontWeight(.semibold)
+                        .foregroundStyle(.white)
                 }
             }
             .alert("저장할 수 없어요", isPresented: $showSaveAlert) {
@@ -96,9 +149,8 @@ struct ContentView: View {
         }
     }
 
-    // MARK: 저장 로직 (검증 포함)
+    // MARK: - 저장 로직
     private func handleSave(title: String, body: AttributedString) {
-        // 1) 검증
         guard let category = selectedCategoryName, !category.isEmpty else {
             alertMessage = "카테고리를 선택하세요."
             showSaveAlert = true
@@ -110,7 +162,6 @@ struct ContentView: View {
             return
         }
 
-        // 2) 저장
         let note = Note(title: title, category: category, body: body)
         context.insert(note)
         do {
@@ -122,9 +173,22 @@ struct ContentView: View {
     }
 }
 
+// MARK: - 색상 전달 구조체
+struct EditorColors {
+    let appBackground: Color
+    let listBackground: Color
+    let textBackground: Color
+    let dateBackground: Color
+    let cardBackground: Color
+    let primaryText: Color
+    let secondaryText: Color
+    let inverseOnCard: Color
+}
+
 // MARK: - DateHeaderAndEditor
 struct DateHeaderAndEditor: View {
     let dateString: String
+    let colors: EditorColors
 
     @State private var attributedText: AttributedString = ""
     @State private var textSelection = AttributedTextSelection()
@@ -134,25 +198,30 @@ struct DateHeaderAndEditor: View {
 
     var body: some View {
         VStack(spacing: 0) {
-
-            // Header
+            // 날짜 헤더
             ZStack {
                 Rectangle()
-                    .fill(.gray.opacity(0.25))
+                    .fill(colors.dateBackground)
                     .clipShape(TopRoundedRectangle(cornerRadius: 30))
                 Text(dateString)
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.black.opacity(0.8))
+                    .foregroundStyle(colors.primaryText.opacity(0.85))
             }
             .frame(height: 40)
 
-            // Title Field
+            // Title Field (커스텀 플레이스홀더: Title과 동일 색상)
             ZStack(alignment: .topLeading) {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.15))
+                colors.textBackground
                     .frame(height: 50)
 
-                TextField("Title", text: $title)
+                if title.isEmpty {
+                    Text("Title")
+                        .foregroundStyle(colors.primaryText) // ✅ 요청: Title과 동일 색
+                        .padding(.top, 15)
+                        .padding(.horizontal, 15)
+                }
+
+                TextField("", text: $title) // placeholder는 위 Text로 대체
                     .font(.system(size: 17))
                     .padding(.top, 15)
                     .padding(.horizontal, 15)
@@ -162,16 +231,15 @@ struct DateHeaderAndEditor: View {
 
             Divider()
                 .frame(height: 1)
-                .background(Color.gray.opacity(0.3))
+                .background(colors.secondaryText.opacity(0.3))
 
-            // Rich Text Editor
+            // Rich Text Editor (커스텀 플레이스홀더 동일 색상)
             ZStack(alignment: .topLeading) {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.15))
+                colors.textBackground
 
                 if attributedText.characters.isEmpty {
                     Text("Text")
-                        .foregroundStyle(.gray.opacity(0.6))
+                        .foregroundStyle(colors.primaryText) // ✅ 요청: Title과 동일 색
                         .padding(.top, 15)
                         .padding(.horizontal, 15)
                 }
@@ -179,20 +247,21 @@ struct DateHeaderAndEditor: View {
                 EditorView(
                     text: $attributedText,
                     selection: $textSelection,
-                    onSave: { onSave(title, attributedText) }
+                    onSave: { onSave(title, attributedText) },
+                    textColor: colors.primaryText // 실제 본문 글자색 (가독성)
                 )
                 .font(.system(size: 17))
                 .padding(.top, 15)
                 .padding(.horizontal, 15)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
-                .foregroundStyle(.black)
             }
         }
         .mask(RoundedRectangle(cornerRadius: 0, style: .continuous))
         .ignoresSafeArea(.container, edges: .bottom)
         .compositingGroup()
         .shadow(color: .black.opacity(0.03), radius: 2, y: 1)
+        .background(colors.appBackground)
     }
 }
 
@@ -204,15 +273,11 @@ struct TopRoundedRectangle: Shape {
         path.move(to: CGPoint(x: 0, y: cornerRadius))
         path.addArc(center: CGPoint(x: cornerRadius, y: cornerRadius),
                     radius: cornerRadius,
-                    startAngle: .degrees(180),
-                    endAngle: .degrees(270),
-                    clockwise: false)
+                    startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
         path.addLine(to: CGPoint(x: rect.width - cornerRadius, y: 0))
         path.addArc(center: CGPoint(x: rect.width - cornerRadius, y: cornerRadius),
                     radius: cornerRadius,
-                    startAngle: .degrees(270),
-                    endAngle: .degrees(0),
-                    clockwise: false)
+                    startAngle: .degrees(270), endAngle: .degrees(0), clockwise: false)
         path.addLine(to: CGPoint(x: rect.width, y: rect.height))
         path.addLine(to: CGPoint(x: 0, y: rect.height))
         path.closeSubpath()
@@ -227,9 +292,11 @@ struct EditorView: View {
     @Binding var selection: AttributedTextSelection
 
     var onSave: () -> Void
+    let textColor: Color
 
     var body: some View {
         TextEditor(text: $text, selection: $selection)
+            .foregroundStyle(textColor)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Button("Bold", systemImage: "bold") {
