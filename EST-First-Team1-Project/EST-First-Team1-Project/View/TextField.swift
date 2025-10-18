@@ -10,7 +10,6 @@ import SwiftData
 
 // MARK: - 색상 전달 구조체
 struct EditorColors {
-//    let appBackground: Color
     let textBackground: Color
     let dateBackground: Color
     let primaryText: Color
@@ -76,7 +75,9 @@ struct ContentView: View {
         : Color(red: 53/255, green: 53/255, blue: 53/255)
     }
     private var textBackground: Color { .white }
-    private var dateBackground: Color { Color(red: 158/255, green: 158/255, blue: 159/255) }
+    private var dateBackground: Color {
+        Color(red: 158/255, green: 158/255, blue: 159/255)
+    }
     private var primaryText: Color { .black }
     private var secondaryText: Color { Color.black.opacity(0.6) }
     var body: some View {
@@ -229,7 +230,9 @@ struct DateHeaderAndEditor: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 5)
                 .background(colors.dateBackground)
-                .clipShape(TopRoundedRectangle(cornerRadius: 30))
+                .clipShape(
+                        UnevenRoundedRectangle(topLeadingRadius: 30, topTrailingRadius: 30)
+                    )
             
 
             ZStack(alignment: .topLeading) {
@@ -288,25 +291,6 @@ private struct BottomSafeAreaBackground: View {
     }
 }
 
-// MARK: - Shape
-struct TopRoundedRectangle: Shape {
-    var cornerRadius: CGFloat = 16
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: 0, y: cornerRadius))
-        path.addArc(center: CGPoint(x: cornerRadius, y: cornerRadius),
-                    radius: cornerRadius,
-                    startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
-        path.addLine(to: CGPoint(x: rect.width - cornerRadius, y: 0))
-        path.addArc(center: CGPoint(x: rect.width - cornerRadius, y: cornerRadius),
-                    radius: cornerRadius,
-                    startAngle: .degrees(270), endAngle: .degrees(0), clockwise: false)
-        path.addLine(to: CGPoint(x: rect.width, y: rect.height))
-        path.addLine(to: CGPoint(x: 0, y: rect.height))
-        path.closeSubpath()
-        return path
-    }
-}
 
 // MARK: - RichText Editor
 struct EditorView: View {
