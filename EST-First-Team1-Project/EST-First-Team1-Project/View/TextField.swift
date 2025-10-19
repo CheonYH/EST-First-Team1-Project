@@ -118,7 +118,7 @@ struct ContentView: View {
         guard !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return showAlert("Title을 입력하세요.")
         }
-
+        
         do {
             if let target = editTarget {
                 target.category = categoryModel
