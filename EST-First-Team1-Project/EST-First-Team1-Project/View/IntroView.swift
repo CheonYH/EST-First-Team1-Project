@@ -8,50 +8,66 @@
 
 import SwiftUI
 
+// MARK: - IntroView
+
+/// # Overview
+/// BoxUp 앱의 **온보딩(인트로) 화면**입니다.
+/// 좌우로 스와이프 가능한 4개의 페이지를 제공하며, 마지막 페이지에서 **“시작하기”** 버튼으로
+/// 온보딩을 종료하고 메인 화면으로 전환합니다.
+///
+/// # Discussion
+/// - 온보딩 완료 여부는 `@AppStorage("hasSeenIntro")` 키로 영구 저장됩니다.
+/// - App 엔트리(@main)에서 아래와 같이 분기해야 동작합니다:
+///   ```swift
+///   if hasSeenIntro { MainPage() } else { IntroView() }
+///   ```
+/// - 페이지 구성:
+///   0: 앱 이미지/타이틀/한줄 소개
+///   1: 카테고리로 담기(카드)
+///   2: 필터로 찾기(카드)
+///   3: 되돌아보기(카드) + 시작하기
+///
+/// # SeeAlso
+/// - ``IntroCard``
+/// - `@AppStorage("hasSeenIntro")`
 struct IntroView: View {
+    
+    /// 온보딩을 이미 보았는지 여부.
+    ///
+    /// - Note: `true`가 되면 App 루트 분기에 의해 `MainPage`가 표시됩니다.
     @AppStorage("hasSeenIntro") private var hasSeenIntro = false
+    
+    /// 현재 선택된 페이지 인덱스(0-based).
     @State private var page = 0
     
-    // 마지막 페이지 인덱스
+    /// 마지막 페이지 인덱스. (페이지가 늘어나면 함께 수정)
     private let lastPage = 3
     
+    /// # Overview
+    /// 인트로 전체 레이아웃을 구성합니다.
+    /// 배경은 다크 톤 고정이며, `TabView(.page)`로 스와이프 전환을 제공합니다.
     var body: some View {
         ZStack {
-            // 요청: 배경을 지정한 RGB 색상으로 변경
+            // 앱 공용 다크 배경
             Color(red: 53/255, green: 53/255, blue: 53/255)
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
-                
-                // 개발용: 인트로 다시 보기 스위치 (필요 시 주석 해제)
-                /*
-                 Toggle("인트로 다시 보기(개발용)", isOn: Binding(
-                 get: { !hasSeenIntro },
-                 set: { newValue in hasSeenIntro = !newValue }
-                 ))
-                 .toggleStyle(.switch)
-                 .tint(.white)
-                 .foregroundStyle(.white)
-                 .padding(.top, 8)
-                 */
-                
-                // ✅ 스와이프 가능한 페이지
+                // ─ 페이지들 (스와이프)
                 TabView(selection: $page) {
-                    // 1) 앱 이미지 + 타이틀 + 소개
+                    // 0) 앱 이미지 + 타이틀 + 소개
                     VStack(spacing: 16) {
-                        // 앱 이미지
+                
                         Image("star")
                             .resizable()
                             .scaledToFit()
                             .frame(maxWidth: 200, maxHeight: 200)
                             .accessibilityLabel("앱 아이콘")
-                        
-                        // 앱 타이틀
+            
                         Text("BoxUp 박스업")
                             .font(.system(size: 34, weight: .bold))
                             .foregroundStyle(.white)
                         
-                        // 앱 한 줄 소개(멀티라인)
                         Text("기록을 담고, 꺼내는 즐거움.\n카테고리로 정리하고 바로 찾는 회고앱")
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.white.opacity(0.9))
@@ -60,7 +76,7 @@ struct IntroView: View {
                     .padding(.horizontal, 20)
                     .tag(0)
                     
-                    // 2) Spacer + IntroCard + (아래)Spacer
+                    // 1) 카테고리로 담기
                     VStack {
                         Spacer()
                         IntroCard(
@@ -72,7 +88,7 @@ struct IntroView: View {
                     }
                     .tag(1)
                     
-                    // 3) Spacer + IntroCard + Spacer
+                    // 2) 필터로 바로 찾기
                     VStack {
                         Spacer()
                         IntroCard(
@@ -84,7 +100,7 @@ struct IntroView: View {
                     }
                     .tag(2)
                     
-                    // 4) Spacer + IntroCard + Spacer (마지막 페이지)
+                    // 3) 되돌아보기 (+ 마지막 페이지)
                     VStack {
                         Spacer()
                         IntroCard(
@@ -98,11 +114,10 @@ struct IntroView: View {
                 }
                 .tabViewStyle(.page)
                 .indexViewStyle(.page(backgroundDisplayMode: .always))
-                // 인디케이터가 텍스트를 가리지 않도록 높이를 늘리고 아래쪽 패딩을 추가
-                .frame(height: 440)
+                .frame(height: 440) // 인디케이터와 텍스트 간격 확보
                 .padding(.bottom, 8)
                 
-                // 하단 컨트롤: 이전 / 다음 또는 시작하기
+                // ─ 하단 컨트롤: 이전 / 다음 / 시작하기
                 HStack {
                     // 첫 페이지에서는 "이전" 숨김
                     if page == 0 {
@@ -132,7 +147,7 @@ struct IntroView: View {
                         .accessibilityLabel("다음 페이지")
                     } else {
                         Button("시작하기") {
-                            // ✅ App 루트 분기에 의해 MainPage로 전환
+                            // 온보딩 완료 → App 루트 분기에 의해 MainPage 표시
                             hasSeenIntro = true
                         }
                         .buttonStyle(.borderedProminent)
@@ -150,7 +165,19 @@ struct IntroView: View {
     }
 }
 
-// 재사용 카드
+// MARK: - IntroCard (재사용 카드)
+
+/// # Overview
+/// 온보딩에서 사용하는 단순 설명 카드 컴포넌트입니다.
+/// 큰 아이콘, 제목, 부제목으로 구성됩니다.
+///
+/// # Parameters
+/// - icon: SF Symbols 이름
+/// - title: 카드 제목
+/// - subtitle: 카드 설명(멀티라인 가능)
+///
+/// # Accessibility
+/// 보이스오버가 하나의 문장처럼 읽도록 `accessibilityElement(children: .combine)`을 사용합니다.
 private struct IntroCard: View {
     let icon: String
     let title: String
@@ -177,6 +204,7 @@ private struct IntroCard: View {
     }
 }
 
+// MARK: - Preview
 #Preview {
     IntroView()
 }

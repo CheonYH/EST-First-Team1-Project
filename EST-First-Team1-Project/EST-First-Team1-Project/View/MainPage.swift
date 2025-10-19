@@ -8,64 +8,113 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - MainPage
+
+/// # Overview
+/// BoxUp의 **메인 리스트 화면**입니다.
+/// 오늘 날짜 헤더, 카테고리 필터, 검색, 항목 목록, 그리고 새 기록/카테고리/통계로 이동하는
+/// 네비게이션 진입점을 제공합니다.
+///
+/// # Discussion
+/// - 데이터는 SwiftData의 ``EntryModel``/``CategoryModel``을 `@Query`로 구독합니다.
+/// - 상단 툴바의 **카테고리 필터**는 선택된 카테고리에 맞춰 목록을 즉시 필터링합니다.
+/// - **검색창**은 조건부로 표시되며(돋보기 버튼), 제목과 본문(AttributedString → String)을 대상으로 합니다.
+/// - 셀을 탭하면 `ContentView(editTarget:)`로 진입하여 **수정 모드**로 이동합니다.
+/// - 라이트/다크에 따라 카드 · 배경 · 텍스트 대비를 조정합니다.
+///
+/// # SeeAlso
+/// - ``StatusView`` : 통계 화면
+/// - ``Category``   : 카테고리 관리 화면
+/// - ``ContentView``: 에디터(신규/수정)
 struct MainPage: View {
     
-   
+    // MARK: Environment
     
-    
+    /// SwiftData 저장/조회 컨텍스트.
     @Environment(\.modelContext) private var ctx
+    
+    /// 시스템 색상 모드(라이트/다크).
     @Environment(\.colorScheme) private var scheme
     
-    // Entry 최신순
+    // MARK: Data Sources
+    
+    /// 최신 작성순으로 정렬된 회고 엔트리 목록.
     @Query(sort: [SortDescriptor(\EntryModel.createdAt, order: .reverse)])
     private var entries: [EntryModel]
     
-    // 카테고리(표시용),
+    /// 이름 오름차순 정렬된 카테고리 목록(필터 메뉴용).
     @Query(sort: [SortDescriptor(\CategoryModel.name, order: .forward)])
     private var categories: [CategoryModel]
     
+    // MARK: UI States
+    
+    /// 검색 텍스트.
     @State private var searchText = ""
-    // 햄버거 버튼 상태 메시지(비옵셔널로 단순화, 비어있으면 표시 없음으로 취급)
+    
+    /// 작업 상태 메시지(필요 시 알림 등에 사용).
     @State private var statusMessage: String = ""
-    // 돋보기 버튼
+    
+    /// 검색창 표시 여부.
     @State private var isSearchVisible: Bool = false
-    // 선택된 카테고리 (SwiftData Category 사용) — 선택 없음 상태가 필요하므로 옵셔널 유지
+    
+    /// 선택된 카테고리(없으면 전체).
     @State private var selectedCategory: CategoryModel? = nil
-    // 카테고리 화면 네비게이션 트리거
+    
+    /// 카테고리 화면 네비게이션 트리거.
     @State private var navigateToCategory: Bool = false
-    // 텍스트 에디터(텍스트필드 페이지) 네비게이션 트리거
+    
+    /// 텍스트 에디터 화면 네비게이션 트리거.
     @State private var navigateToTextEditor: Bool = false
-    // 통계 화면 네비게이션 트리거
+    
+    /// 통계(StatusView) 화면 네비게이션 트리거.
     @State private var navigateToStatusView: Bool = false
-    // 다크/라이트 대응 색상
+    
+    // MARK: Color Palette (Adaptive)
+    
+    /// 앱 헤더/배경 색상(다크/라이트 대응).
     private var appBackground: Color {
         scheme == .dark
         ? Color(red: 28/255, green: 28/255, blue: 30/255) // system-like dark
         : Color(red: 53/255, green: 53/255, blue: 53/255)
     }
+    
+    /// 리스트 영역 배경.
     private var listBackground: Color {
         scheme == .dark ? Color.black.opacity(0.05) : Color.white
     }
+    
+    /// 카드 배경.
     private var cardBackground: Color {
         scheme == .dark
         ? Color(red: 44/255, green: 44/255, blue: 46/255) // secondary dark
         : appBackground
     }
+    
+    /// 기본 텍스트 컬러.
     private var primaryText: Color {
         scheme == .dark ? .white : .black
     }
+    
+    /// 보조 텍스트 컬러.
     private var secondaryText: Color {
         scheme == .dark ? Color.white.opacity(0.7) : Color.black.opacity(0.6)
     }
+    
+    /// 카드 위 텍스트(가독을 위해 현재는 항상 흰색).
     private var inverseOnCard: Color {
         // Text color to be used on cardBackground
         scheme == .dark ? .white : .white
     }
     
     
-    // 검색 필터 (제목/본문)
-    // EntryModel에는 `content`가 없고 `attributedContent`가 있습니다.
-    // 단계적으로 나눠 타입체커 부담을 줄이고, 선택 카테고리와 텍스트 검색을 순차 적용합니다.
+    // MARK: Filtering
+    
+    /// # Overview
+    /// 현재 **선택된 카테고리 + 검색어**를 적용한 결과 목록입니다.
+    ///
+    /// # Discussion
+    /// - 카테고리: 선택된 경우에만 필터링합니다.
+    /// - 검색: 공백이 아니면 제목과 본문(AttributedString → String 변환)에 대해 `contains` 매칭을 수행합니다.
     private var filtered: [EntryModel] {
         var base = entries
         
@@ -87,7 +136,11 @@ struct MainPage: View {
     }
     
    
-    // 바디
+    // MARK: Body
+    
+    /// # Overview
+    /// 메인 리스트 UI를 구성합니다.
+    /// 상단 헤더, 목록, 툴바(카테고리 필터/검색/메뉴)로 이루어집니다.
     var body: some View {
         
         
@@ -240,7 +293,7 @@ struct MainPage: View {
                                                 .fill(cardBackground)
                                         )
                                         
-                                        // 수정 모드로 바로 진입: ContentView(editTarget:)로 네비게이션
+                                        // 투명 링크: 카드 어디를 눌러도 수정 화면으로
                                         NavigationLink {
                                             ContentView(editTarget: e)
                                                 .navigationBarTitleDisplayMode(.inline)
@@ -295,16 +348,14 @@ struct MainPage: View {
                         }
                         
                     } label: {
-                        // If you have separate dark/light assets, Asset Catalog variants will switch automatically.
-                        // If not, tint the template image to match scheme.
                         Image("Hamburger")
                             .renderingMode(.template)
-                            .foregroundStyle(.white) // Header is dark; keep icon white for contrast
+                            .foregroundStyle(.white)
                             .imageScale(.large)
                     }
                 }
                 
-                // 가운데(제목 영역): 카테고리 토글 메뉴
+                // 중앙: 카테고리 필터 드롭다운
                 ToolbarItem(placement: .principal) {
                     Menu {
                         Button {
@@ -368,7 +419,7 @@ struct MainPage: View {
                     }
                 }
                 
-                // 검색 버튼
+                // 우측: 검색
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         isSearchVisible.toggle()
@@ -391,7 +442,15 @@ struct MainPage: View {
     }
 }
 
-// 설명용: .searchable를 조건부로 적용하기 위한 뷰 수정자.
+// MARK: - ConditionalSearchModifier
+
+/// # Overview
+/// `.searchable`를 **조건부로** 적용하기 위한 뷰 수정자입니다.
+/// 검색창을 토글할 때 뷰 계층을 단순하게 유지합니다.
+///
+/// # Parameters
+/// - isVisible: 검색창 표시 여부
+/// - text: 검색어 바인딩
 private struct ConditionalSearchModifier: ViewModifier {
     let isVisible: Bool
     @Binding var text: String
@@ -405,6 +464,9 @@ private struct ConditionalSearchModifier: ViewModifier {
     }
 }
 
+// MARK: - DateFormatter Helpers
+
+/// 점으로 구분된 연월일(예: `2025.10.17`) 포맷터.
 private extension DateFormatter {
     static let dottedYMD: DateFormatter = {
         let f = DateFormatter()
@@ -414,6 +476,7 @@ private extension DateFormatter {
     }()
 }
 
+// MARK: - Preview
 #Preview {
     MainPage()
         .modelContainer(for: [EntryModel.self, CategoryModel.self], inMemory: true)
