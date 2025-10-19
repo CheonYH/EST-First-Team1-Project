@@ -130,6 +130,7 @@ struct ContentView: View {
         } catch {
             showAlert("저장 중 오류가 발생했어요. 잠시 후에 다시 시도해 주세요.")
         }
+    }
 
     
     // MARK: - 색상 팔레트
