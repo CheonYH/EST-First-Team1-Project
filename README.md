@@ -48,25 +48,25 @@
 ## 📁 프로젝트 구조
 
     EST-First-Team1-Project/
-    ├── EST-First-Team1-Project.swift      # 🚀 앱 진입점 (SwiftUI App)
+    ├── EST-First-Team1-Project.swift      #  앱 진입점 (SwiftUI App)
     │   └─ App lifecycle 및 초기 데이터 로드
     │
-    ├── Data/                              # 💾 데이터 계층 (CRUD 기능)
+    ├── Data/                              #  데이터 계층 (CRUD 기능)
     │   ├── CategoryCRUD.swift             # 카테고리 관련 데이터 처리 (Create/Read/Update/Delete)
     │   └── EntryCRUD.swift                # 엔트리(게시글, 기록 등) 관련 데이터 처리 (CRUD)
     │
-    ├── Models/                            # 📦 데이터 및 도메인 모델
+    ├── Models/                            #  데이터 및 도메인 모델
     │   ├── CategoryModel.swift            # 카테고리 데이터 구조 정의
     │   └── EntryModel.swift               # 엔트리(기록/메모 등) 데이터 구조 정의
     │
-    ├── Views/                             # 🎨 SwiftUI 기반 UI 화면
+    ├── Views/                             #  SwiftUI 기반 UI 화면
     │   ├── Category.swift                 # 카테고리 관련 화면
     │   ├── IntroView.swift                # 앱 인트로(시작) 화면
     │   ├── MainPage.swift                 # 메인 페이지 (앱의 핵심 UI)
     │   ├── StatusView.swift               # 상태(예: 진행 현황) 표시 화면
     │   └── TextField.swift                # 텍스트 입력 관련 커스텀 UI 컴포넌트
     │
-    └── Assets/                            # 🎨 리소스 관리
+    └── Assets/                            #  리소스 관리
     ├── Colors.xcassets                # 앱 컬러셋
     ├── Icons.xcassets                 # 아이콘 및 심볼
     └── AppIcon.appiconset             # 앱 아이콘 세트
