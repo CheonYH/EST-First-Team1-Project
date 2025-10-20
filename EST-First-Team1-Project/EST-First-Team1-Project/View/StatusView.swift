@@ -424,6 +424,7 @@ struct UsageBarChartCard: View {
 /// # Returns
 /// - empty: 빈 상태 권장 높이
 /// - chart: 차트 권장 높이
+
 private func responsiveHeights(
     width w: CGFloat,
     hSize: UserInterfaceSizeClass?,
