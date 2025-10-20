@@ -1,3 +1,37 @@
+// MARK: - Category API (Commented Out Example)
+
+// 전체 카테고리 목록 가져오기
+// async throws -> [CategoryModel]
+// 사용: let all = try await fetchAllCategories(context: ctx)
+//func fetchAllCategories(context: ModelContext) async throws -> [CategoryModel] {
+//    // 구현 예시: context.fetch(FetchDescriptor<CategoryModel>())
+//}
+
+// 특정 ID로 카테고리 가져오기
+// async throws -> CategoryModel?
+// 사용: let cate = try await fetchCategory(by: id, context: ctx)
+//func fetchCategory(by id: PersistentIdentifier, context: ModelContext) async throws -> CategoryModel? {
+//    // 구현 예시: context.fetch(FetchDescriptor<CategoryModel>(predicate: ...)).first
+//}
+
+// 카테고리 생성
+// async throws
+//func createCategory(context: ModelContext, name: String, color: Color, icon: String) async throws {
+//    // 구현 예시: CategoryCRUD.create(...)
+//}
+
+// 카테고리 수정
+// async throws
+//func updateCategory(context: ModelContext, target: CategoryModel, name: String, color: Color, icon: String) async throws {
+//    // 구현 예시: CategoryCRUD.update(...)
+//}
+
+// 카테고리 삭제
+// async throws
+//func deleteCategory(context: ModelContext, target: CategoryModel) async throws {
+//    // 구현 예시: CategoryCRUD.delete(...)
+//}
+
 import SwiftUI
 import SwiftData
 
