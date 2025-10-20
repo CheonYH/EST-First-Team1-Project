@@ -4,8 +4,9 @@
 
 # 📦 BoxUp
 <p align="center">
-  <img width="2000" height="1000" alt="BoxUpImage" src="https://github.com/user-attachments/assets/6f99e949-6b04-4112-bdc3-3639941b6bc7" />
+  <img width="1920" height="1080" alt="Thumbnail" src="https://github.com/user-attachments/assets/3c92e039-28f0-4d15-919d-1d4771e2b8ad" />
 </p>
+
 <div align="center">
   <h1>BoxUp 박스업</h1>
   <h3>텍스트와 제목만으로 검색하는 기존 메모앱, 찾기 어렵지 않으셨나요?</h3>
