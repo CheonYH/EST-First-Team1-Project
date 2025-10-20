@@ -457,60 +457,111 @@ private func responsiveHeights(
 // MARK: - Simple Bar Chart
 
 /// # Overview
-/// 매우 가벼운 커스텀 바 차트입니다. `GeometryReader` 기반으로 막대 폭/높이를 계산하고,
-/// 상단 값 라벨과 하단 카테고리 라벨을 함께 렌더링합니다.
+/// 카테고리별 사용 횟수를 시각화하는 **막대 차트**입니다.
+/// 화면 너비에 따라 막대 폭을 동적으로 계산하고,
+/// 항목이 많을 경우 자동으로 가로 스크롤이 활성화됩니다.
 ///
 /// # Discussion
-/// - 막대 폭은 가로 여백(12pt 간격)을 고려하여 자동 산출합니다.
-/// - 막대 최소 높이 8pt, 값 라벨은 `.monospacedDigit()`로 정렬감을 확보합니다.
-/// - `accessibilityLabel`을 통해 스크린리더가 "`이름, N회`"로 읽습니다.
-///
-/// - Important:
-///   대규모 데이터에서는 `usages.count`에 따라 성능 고려가 필요합니다(예: 가상화/페이지네이션).
+/// - `GeometryReader`로 전체 너비를 측정해 막대 폭과 간격을 계산합니다.
+/// - 모든 막대는 동일한 기준선에서 정렬되며, 상하단 라벨 영역을 고정 슬롯으로 처리해
+///   텍스트 길이와 관계없이 수평 정렬이 유지됩니다.
+/// - 막대군이 한 화면에 모두 들어올 경우 중앙 정렬되어 표시됩니다.
+/// - 항목 수가 많으면 자동으로 가로 스크롤 모드로 전환됩니다.
+/// - 각 막대는 `accessibilityLabel`을 통해 스크린 리더에서 "`이름, N회`"로 읽힙니다.
 struct BarChart: View {
     let usages: [CategoryUsage]
     
     var body: some View {
         GeometryReader { geo in
-            let maxVal = max(usages.map(\.count).max() ?? 1, 1)
-            let barWidth = max(12, (geo.size.width - CGFloat(usages.count - 1) * 12) / CGFloat(max(usages.count, 1)))
+            let n = max(usages.count, 1)
             
-            HStack(alignment: .bottom, spacing: 12) {
-                ForEach(usages) { u in
-                    let barHeight = max(8, CGFloat(u.count) / CGFloat(maxVal) * (geo.size.height - 44))
-                    
-                    VStack(spacing: 6) {
-                        // 값 라벨(막대 '위')
-                        Text("\(u.count)")
-                            .font(.caption2.monospacedDigit().weight(.semibold))
-                            .foregroundStyle(.primary)
-                            .frame(width: barWidth + 8) // 폭 맞춰서 클리핑 방지
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                        
-                        // 막대
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(u.color)
-                            .frame(width: barWidth, height: barHeight)
-                        
-                        // 하단 라벨
-                        Text(u.name)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .frame(width: barWidth + 8)
+            // 1) 좌우 인셋(카드 모서리에 닿지 않도록 살짝만)
+            let inset: CGFloat = 12
+            let available = max(0, geo.size.width - inset * 2)
+            
+            // 2) 최소 스펙
+            let minBar: CGFloat = 14
+            let minGap: CGFloat = 12
+            
+            // 3) 필요 총폭(막대군)
+            let needed = CGFloat(n) * minBar + CGFloat(n - 1) * minGap
+            
+            // 4) Y 스케일
+            let maxVal = max(usages.map(\.count).max() ?? 1, 1)
+            
+            if needed > available {
+                // ─ 넘치면: 가로 스크롤(좌우 inset 유지)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(alignment: .bottom, spacing: minGap) {
+                        ForEach(usages) { u in
+                            BarColumn(u: u, barWidth: minBar, maxVal: maxVal, chartHeight: geo.size.height)
+                        }
                     }
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("\(u.name), \(u.count)회")
+                    .padding(.horizontal, inset)
                 }
-
+            } else {
+                // ─ 들어오면: barW 재계산 + 막대군을 가운데 배치
+                let barW = (available - CGFloat(n - 1) * minGap) / CGFloat(n)
+                let barsWidth = CGFloat(n) * barW + CGFloat(n - 1) * minGap
+                
+                HStack(alignment: .bottom, spacing: minGap) {
+                    ForEach(usages) { u in
+                        BarColumn(u: u, barWidth: barW, maxVal: maxVal, chartHeight: geo.size.height)
+                    }
+                }
+                .frame(width: barsWidth)                              // 막대군 실제 폭
+                .frame(maxWidth: .infinity, alignment: .center)       // 가운데 정렬!
+                .padding(.horizontal, inset)
             }
-            .frame(maxWidth: .infinity, alignment: .bottomLeading)
         }
-        
     }
 }
+
+private struct BarColumn: View {
+    let u: CategoryUsage
+    let barWidth: CGFloat
+    let maxVal: Int
+    let chartHeight: CGFloat
+    
+    //  라벨 슬롯(고정 높이): 필요 시 조정하세요
+    private let topSlot: CGFloat = 18     // 상단 값 라벨 영역
+    private let bottomSlot: CGFloat = 16  // 하단 카테고리명 영역
+    private let innerSpacing: CGFloat = 6 // 라벨↔막대 사이 간격
+    
+    var body: some View {
+        // 모든 막대가 동일 기준으로 계산됨
+        let usable = max(0, chartHeight - topSlot - bottomSlot - innerSpacing*2)
+        let barH   = max(8, CGFloat(u.count) / CGFloat(maxVal) * usable)
+        
+        VStack(spacing: innerSpacing) {
+            // 상단 값 라벨 — 고정 높이 슬롯에 맞춰 정렬(아래 정렬)
+            Text("\(u.count)")
+                .font(.caption2.monospacedDigit().weight(.semibold))
+                .foregroundStyle(.primary)
+                .frame(width: barWidth, height: topSlot, alignment: .bottom)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            
+            // 막대
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(u.color)
+                .frame(width: barWidth, height: barH)
+            
+            // 하단 카테고리명 — 고정 높이 슬롯에 맞춰 정렬(위 정렬)
+            Text(u.name)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .frame(width: barWidth, height: bottomSlot, alignment: .top)
+        }
+        .frame(maxHeight: .infinity, alignment: .bottom)
+    }
+}
+
+
+
+
 
 // MARK: - Preview
 
