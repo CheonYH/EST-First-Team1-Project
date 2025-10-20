@@ -254,17 +254,23 @@ struct CategoryEditorView: View {
                     }
                     
                     Section {
-                        Button(action: save) {
-                            HStack { Spacer(); Text("저장").bold(); Spacer() }
-                        }
-                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
-                        .tint(.blue)
                         
-                        Button { dismiss() } label: {
-                            HStack { Spacer(); Text("취소").bold(); Spacer() }
+                        VStack{
+                            Button(action: save) {
+                                HStack { Spacer(); Text("저장").bold(); Spacer() }
+                            }
+                            
+                            .foregroundStyle(.blue)
+                            
+                            Divider()
+                            
+                            Button { dismiss() } label: {
+                                HStack { Spacer(); Text("취소").bold(); Spacer() }
+                            }
+                            .foregroundColor(.red)
                         }
-                        .foregroundColor(.red)
                     }
+                    .listRowSeparator(.hidden)
                 }
                 .scrollContentBackground(.hidden)
                 .background(Color.black)
@@ -335,7 +341,7 @@ struct CategoryEditorView: View {
 struct Category_Previews: PreviewProvider {
     static var previews: some View {
         Category()
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(.light)
             .modelContainer(for: CategoryModel.self)
     }
 }
