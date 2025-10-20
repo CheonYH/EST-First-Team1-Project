@@ -1,3 +1,34 @@
+/*
+ Category 관련 API (Swift 인터페이스 예시)
+
+ // 전체 카테고리 목록 가져오기
+ // - Parameters: context: ModelContext
+ // - Returns: 카테고리 모델 배열 ([CategoryModel])
+ // - Throws: SwiftData 에러
+ func fetchAllCategories(context: ModelContext) async throws -> [CategoryModel]
+
+ // 특정 ID로 카테고리 가져오기
+ // - Parameters: id: PersistentIdentifier, context: ModelContext
+ // - Returns: 해당 CategoryModel 혹은 nil
+ // - Throws: SwiftData 에러
+ func fetchCategory(by id: PersistentIdentifier, context: ModelContext) async throws -> CategoryModel?
+
+ // 카테고리 생성
+ // - Parameters: name: String, color: Color, icon: String, context: ModelContext
+ // - Throws: SwiftData 에러
+ func createCategory(context: ModelContext, name: String, color: Color, icon: String) async throws
+
+ // 카테고리 수정
+ // - Parameters: target: CategoryModel, name: String, color: Color, icon: String, context: ModelContext
+ // - Throws: SwiftData 에러
+ func updateCategory(context: ModelContext, target: CategoryModel, name: String, color: Color, icon: String) async throws
+
+ // 카테고리 삭제
+ // - Parameters: target: CategoryModel, context: ModelContext
+ // - Throws: SwiftData 에러
+ func deleteCategory(context: ModelContext, target: CategoryModel) async throws
+*/
+
 import SwiftUI
 import SwiftData
 
