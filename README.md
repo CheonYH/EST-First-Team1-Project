@@ -74,7 +74,8 @@
 ## 🖥️ 앱 주요 화면
 | 홈화면 (몌뉴 & 회고 리스트) | 회고 작성 페이지 | 카테고리 생성 페이지 | 통계 분석 페이지 |
 |:---:|:---:|:---:|:---:|
-| <img width="411" height="856" alt="스크린샷 2025-10-20 오전 12 04 02" src="https://github.com/user-attachments/assets/70e9f81f-f996-4dc1-b038-8104c7fa32a3" /> | <img width="411" height="856" alt="스크린샷 2025-10-20 오전 12 06 02" src="https://github.com/user-attachments/assets/ac87b5f8-aeaf-476a-8aa5-03d2da4ba898" /> | <img width="411" height="856" alt="스크린샷 2025-10-20 오전 12 05 39" src="https://github.com/user-attachments/assets/006faaf3-fff6-4a15-bb28-66d4c6ab72f4" /> | <img width="411" height="856" alt="스크린샷 2025-10-20 오전 12 05 45" src="https://github.com/user-attachments/assets/5597b44c-d210-433e-a801-bfd867659f35" /> |
+| <img width="411" height="856" alt="스크린샷 2025-10-20 오전 12 04 02" src="https://github.com/user-attachments/assets/70e9f81f-f996-4dc1-b038-8104c7fa32a3" /> | <img width="411" height="856" alt="스크린샷 2025-10-20 오전 12 06 02" src="https://github.com/user-attachments/assets/ac87b5f8-aeaf-476a-8aa5-03d2da4ba898" /> | <img width="411" height="856" alt="스크린샷 2025-10-20 오전 12 05 39" src="https://github.com/user-attachments/assets/006faaf3-fff6-4a15-bb28-66d4c6ab72f4" /> | <img width="411" height="**560**" alt="스크린샷 2025-10-20 오전 10 25 24" src="https://github.com/user-attachments/assets/ac5bb419-aeb8-4d96-9711-29315ddc8fd2" /> |
+ |
 
 ## 💡 사용방법
   1. 메인 화면에서 새 메모를 추가하려면 새 메모 버튼으로 작성 페이지 이동
