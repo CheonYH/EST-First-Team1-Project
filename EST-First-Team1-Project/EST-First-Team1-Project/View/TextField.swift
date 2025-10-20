@@ -221,6 +221,7 @@ struct ContentView: View {
                                 }
                                 .foregroundStyle(.white)
                                 .contentShape(Rectangle())
+                                .frame(maxWidth: .infinity,  alignment: .leading)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
