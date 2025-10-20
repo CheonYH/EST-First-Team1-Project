@@ -14,7 +14,6 @@ import SwiftData
 /// 회고를 카테고리별로 분류/검색하거나, 통계 화면에서 사용 횟수를 표시할 때 활용됩니다.
 ///
 /// - Note: 이 모델은 SwiftData에서 자동으로 관리됩니다.
-///   새로운 항목을 추가할 때는 `ModelContext`에 `insert` 해주면 됩니다.
 ///
 
 @Model
