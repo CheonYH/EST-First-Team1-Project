@@ -131,72 +131,77 @@ struct Category: View {
     @State private var editingCategory: CategoryModel? = nil
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(red: 53/255, green: 53/255, blue: 53/255).ignoresSafeArea()
-                
-                if cate.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "folder.badge.plus")
-                            .font(.system(size: 48))
-                            .foregroundColor(.white)
-                        Text("카테고리를 추가해 주세요")
-                            .foregroundColor(.white)
-                            .font(.headline)
-                    }
-                    .multilineTextAlignment(.center)
-                } else {
-                    List {
-                        ForEach(cate, id: \.persistentModelID) { category in
-                            Button {
-                                editingCategory = category
-                            } label: {
-                                HStack(spacing: 12) {
-                                    Image(systemName: category.icon)
-                                        .foregroundColor(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a))
-                                        .font(.title2)
-                                        .frame(width: 36, height: 36)
-                                        .background(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a).opacity(0.15))
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(category.name)
-                                            .font(.headline)
-                                            .foregroundColor(.white)
-                                    }
-                                }
-                                .padding(.vertical, 6)
-                            }
+        GeometryReader { geo in
+            let isLandscape = geo.size.width > geo.size.height
+            NavigationStack {
+                ZStack {
+                    Color(red: 53/255, green: 53/255, blue: 53/255).ignoresSafeArea()
+                    if cate.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "folder.badge.plus")
+                                .font(.system(size: 48))
+                                .foregroundColor(.white)
+                            Text("카테고리를 추가해 주세요")
+                                .foregroundColor(.white)
+                                .font(.headline)
                         }
-                        .onDelete(perform: deleteRows)
-                        .listRowBackground(Color.black)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: isLandscape ? .infinity : nil)
+                        .padding(.horizontal, isLandscape ? 40 : 0)
+                    } else {
+                        List {
+                            ForEach(cate, id: \.persistentModelID) { category in
+                                Button {
+                                    editingCategory = category
+                                } label: {
+                                    HStack(spacing: 12) {
+                                        Image(systemName: category.icon)
+                                            .foregroundColor(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a))
+                                            .font(.title2)
+                                            .frame(width: 36, height: 36)
+                                            .background(Color.from255(r: category.r, g: category.g, b: category.b, a: category.a).opacity(0.15))
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(category.name)
+                                                .font(.headline)
+                                                .foregroundColor(.white)
+                                        }
+                                    }
+                                    .padding(.vertical, 6)
+                                }
+                            }
+                            .onDelete(perform: deleteRows)
+                            .listRowBackground(Color.black)
+                        }
+                        .scrollContentBackground(.hidden)
+                        .background(Color.black)
+                        .frame(maxWidth: isLandscape ? .infinity : nil)
+                        .padding(.horizontal, isLandscape ? 40 : 0)
                     }
-                    .scrollContentBackground(.hidden)
-                    .background(Color.black)
                 }
-            }
-            .navigationTitle("카테고리")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { isShowingAddSheet = true }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
+                .navigationTitle("카테고리")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: { isShowingAddSheet = true }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                        }
                     }
                 }
-            }
-            .fullScreenCover(isPresented: $isShowingAddSheet) {
-                CategoryEditorView(
-                    title: "카테고리 만들기",
-                    target: nil
-                )
-            }
-            .fullScreenCover(item: $editingCategory) { target in
-                CategoryEditorView(
-                    title: "카테고리 수정",
-                    target: target
-                )
+                .fullScreenCover(isPresented: $isShowingAddSheet) {
+                    CategoryEditorView(
+                        title: "카테고리 만들기",
+                        target: nil
+                    )
+                }
+                .fullScreenCover(item: $editingCategory) { target in
+                    CategoryEditorView(
+                        title: "카테고리 수정",
+                        target: target
+                    )
+                }
             }
         }
     }
